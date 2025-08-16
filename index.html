@@ -1,1 +1,114 @@
-<!doctype html><meta http-equiv="refresh" content="0; url=./tictactoe.html">
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mini Game Collection</title>
+  <style>
+    :root{--bg:#0e1116;--panel:#141a22;--fg:#e6edf3;--muted:#94a3b8;--card:#1b2330;--br:14px}
+    *{box-sizing:border-box} html,body{margin:0;height:100%}
+    body{background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto}
+    header{position:sticky;top:0;z-index:10;background:linear-gradient(#0e1116,#0e1116cc 60%,transparent);padding:16px 16px 8px}
+    h1{margin:0 0 8px;font-size:clamp(18px,4.5vw,28px)}
+    .toolbar{display:flex;gap:8px;flex-wrap:wrap}
+    input[type="search"]{flex:1;min-width:220px;padding:10px 12px;border-radius:12px;border:1px solid #394457;background:#0f1824;color:var(--fg)}
+    main{padding:16px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+    .card{background:var(--card);border:1px solid #2a3342;border-radius:var(--br);overflow:hidden;display:flex;flex-direction:column}
+    .thumb{aspect-ratio:16/9;background:#0f172a;display:block;width:100%;object-fit:cover}
+    .meta{padding:12px}
+    .title{margin:0 0 4px;font-weight:600}
+    .desc{margin:0;color:var(--muted);font-size:14px}
+    .actions{padding:12px;display:flex;gap:8px;margin-top:auto}
+    .btn{flex:1;text-align:center;padding:10px 12px;border-radius:12px;border:1px solid #394457;background:#2a3443;color:var(--fg);text-decoration:none}
+    footer{color:#718096;text-align:center;padding:24px}
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🎮 My Mini Game Collection</h1>
+    <div class="toolbar">
+      <input id="q" type="search" placeholder="Search: title/description…" aria-label="Search games">
+    </div>
+  </header>
+
+  <main>
+    <div id="grid" class="grid" role="list"></div>
+  </main>
+
+  <footer>© <span id="year"></span> JJY's Arcade</footer>
+
+  <script>
+    const state = { games: [], filtered: [] };
+
+    async function load() {
+      try {
+        const res = await fetch('./games.json', { cache: 'no-store' });
+        state.games = await res.json();
+      } catch (e) {
+        // Fallback sample data to avoid a blank page if JSON is missing
+        state.games = [
+          { slug:'tic-tac-toe', title:'8×8 Tic Tac Toe', desc:'With win-rate analysis', thumb:'games/tic-tac-toe/cover.png' },
+          { slug:'sudoku', title:'9×9 Sudoku', desc:"Sudoku with a 'Peek Answer' button", thumb:'games/sudoku/cover.png' },
+        ];
+      }
+      state.filtered = state.games;
+      render();
+    }
+
+    function render() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+      state.filtered.forEach(g => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.setAttribute('role','listitem');
+
+        const img = document.createElement('img');
+        img.className = 'thumb';
+        img.loading = 'lazy';
+        img.alt = g.title;
+        img.src = g.thumb || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"/>';
+        card.appendChild(img);
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.innerHTML = `<h3 class="title">${g.title}</h3><p class="desc">${g.desc||''}</p>`;
+        card.appendChild(meta);
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        const play = document.createElement('a');
+        play.className = 'btn';
+        play.href = `./play.html?game=${encodeURIComponent(g.slug)}`;
+        play.textContent = 'Play';
+        actions.appendChild(play);
+
+        const open = document.createElement('a');
+        open.className = 'btn';
+        open.href = `./games/${encodeURIComponent(g.slug)}/`;
+        open.target = '_blank';
+        open.rel = 'noopener';
+        open.textContent = 'Open in new tab';
+        actions.appendChild(open);
+
+        card.appendChild(actions);
+        grid.appendChild(card);
+      });
+    }
+
+    function onSearch(e){
+      const q = e.target.value.trim().toLowerCase();
+      state.filtered = state.games.filter(g =>
+        (g.title||'').toLowerCase().includes(q) ||
+        (g.desc||'').toLowerCase().includes(q)
+      );
+      render();
+    }
+
+    document.getElementById('q').addEventListener('input', onSearch);
+    document.getElementById('year').textContent = new Date().getFullYear();
+    load();
+  </script>
+</body>
+</html>
