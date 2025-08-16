@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>11x11 Tic Tac Toe + 胜率分析（纯HTML+JS）</title>
+<style>
+  :root{
+    --cell:48px;
+    --gap:4px;
+    --bg:#0e1116;
+    --panel:#141a22;
+    --fg:#e6edf3;
+    --muted:#8693a0;
+    --cell-bg:#1b2330;
+    --btn-bg:#2a3443;
+    --btn-border:#394457;
+    --btn-hover:#334154;
+    --status-bg:#1b2330;
+    --bar-bg:#222b38;
+  }
+  
+  :root[data-theme="light"]{
+    --bg:#f8fafc;
+    --panel:#ffffff;
+    --fg:#1e293b;
+    --muted:#64748b;
+    --cell-bg:#f1f5f9;
+    --btn-bg:#e2e8f0;
+    --btn-border:#cbd5e1;
+    --btn-hover:#cbd5e1;
+    --status-bg:#f1f5f9;
+    --bar-bg:#e2e8f0;
+  }
+  
+  *{box-sizing:border-box} 
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;transition:background-color 0.3s,color 0.3s}
+  .wrap{max-width:1200px;margin:24px auto;padding:0 16px;display:grid;grid-template-columns:1fr 320px;gap:16px}
+  header{grid-column:1/-1;margin-top:8px;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+  h1{font-size:20px;margin:0 0 6px}
+  .sub{color:var(--muted);font-size:13px}
+  .theme-toggle{background:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:8px;padding:6px 12px;font:inherit;cursor:pointer;font-size:12px;transition:background-color 0.2s}
+  .theme-toggle:hover{background:var(--btn-hover)}
+  .board{display:grid;grid-template-columns:repeat(11,var(--cell));gap:var(--gap);padding:16px;background:var(--panel);border-radius:12px;align-self:start;transition:background-color 0.3s}
+  .cell{width:var(--cell);height:var(--cell);border-radius:6px;background:var(--cell-bg);display:flex;align-items:center;justify-content:center;
+        font-weight:700;font-size:20px;cursor:pointer;transition:transform .05s,background-color 0.3s}
+  .cell:hover{transform:translateY(-1px)} .cell.disabled{cursor:not-allowed;opacity:.6}
+  .cell.X{color:#5bd1a5} .cell.O{color:#f56565}
+  
+  :root[data-theme="light"] .cell.X{color:#059669}
+  :root[data-theme="light"] .cell.O{color:#dc2626}
+  
+  .side{background:var(--panel);border-radius:12px;padding:14px;transition:background-color 0.3s}
+  .row{display:flex;align-items:center;gap:10px;margin:10px 0}
+  .row label{font-size:13px;color:var(--muted);min-width:72px}
+  input[type=range]{width:100%}
+  .status{margin:8px 0 12px;padding:10px;border-radius:10px;background:var(--status-bg);font-size:14px;transition:background-color 0.3s}
+  .meta{color:var(--muted);font-size:12px}
+  .bars{display:grid;gap:8px;margin-top:8px}
+  .bar{height:12px;background:var(--bar-bg);border-radius:6px;overflow:hidden;transition:background-color 0.3s}
+  .bar>span{display:block;height:100%}
+  .bar.x>span{background:#5bd1a5} .bar.o>span{background:#f56565} .bar.d>span{background:#7f8ea3}
+  .nums{display:flex;justify-content:space-between;font-size:13px;margin-top:6px;color:var(--muted)}
+  .btns{display:flex;gap:8px;margin-top:6px}
+  button{background:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:10px;padding:8px 10px;font:inherit;cursor:pointer;transition:background-color 0.2s}
+  button:hover{background:var(--btn-hover)}
+  
+  .confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000}
+  .confetti{position:absolute;width:10px;height:10px;animation:confetti-fall 3s linear forwards}
+  @keyframes confetti-fall{
+    0%{transform:translateY(-10px) rotate(0deg);opacity:1}
+    100%{transform:translateY(100vh) rotate(720deg);opacity:0}
+  }
+  
+  .winner-cell{animation:winner-pulse 0.6s ease-in-out 3}
+  @keyframes winner-pulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.1)}
+  }
+  
+  @media (max-width:1000px){.wrap{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>11×11 Tic Tac Toe（含胜率分析）</h1>
+        <div class="sub">玩家轮流点击落子。右侧实时用蒙特卡洛模拟估计当前局面的 X / O / 平局概率。</div>
+      </div>
+      <button class="theme-toggle" id="themeToggle">🌙 夜间模式</button>
+    </header>
+
+    <div class="board" id="board"></div>
+
+    <aside class="side">
+      <div class="status" id="status">轮到：<b id="turn">X</b></div>
+
+      <div class="row">
+        <label for="sims">模拟次数</label>
+        <input id="sims" type="range" min="500" max="5000" step="500" value="1500" />
+        <span class="meta" id="simsVal">1500</span>
+      </div>
+
+      <div class="row">
+        <label>胜利条件</label>
+        <span class="meta">5 连成一线即胜</span>
+      </div>
+
+      <div class="btns">
+        <button id="rerun">重新估计</button>
+        <button id="reset">重开一局</button>
+      </div>
+
+      <div style="margin-top:14px">
+        <div class="nums">
+          <span>X 胜率：<b id="xPct">--%</b></span>
+          <span>O 胜率：<b id="oPct">--%</b></span>
+        </div>
+        <div class="bars">
+          <div class="bar x"><span id="xBar" style="width:0%"></span></div>
+          <div class="bar o"><span id="oBar" style="width:0%"></span></div>
+          <div class="bar d"><span id="dBar" style="width:0%"></span></div>
+        </div>
+        <div class="nums">
+          <span>平局率：<b id="dPct">--%</b></span>
+          <span class="meta" id="timeInfo"></span>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+const SIZE = 11;
+const CELLS = SIZE * SIZE;
+let board = Array(CELLS).fill(null);
+let nextPlayer = 'X';
+let gameOver = false;
+let isDarkMode = true;
+
+// LINES 生成保持不变，自动适配 SIZE
+const LINES = (() => {
+  const lines = [];
+  for (let r = 0; r < SIZE; r++) {
+    for (let c = 0; c <= SIZE - 5; c++) {
+      lines.push([r*SIZE+c, r*SIZE+c+1, r*SIZE+c+2, r*SIZE+c+3, r*SIZE+c+4]);
+    }
+  }
+  for (let c = 0; c < SIZE; c++) {
+    for (let r = 0; r <= SIZE - 5; r++) {
+      lines.push([r*SIZE+c, (r+1)*SIZE+c, (r+2)*SIZE+c, (r+3)*SIZE+c, (r+4)*SIZE+c]);
+    }
+  }
+  for (let r = 0; r <= SIZE - 5; r++) {
+    for (let c = 0; c <= SIZE - 5; c++) {
+      lines.push([r*SIZE+c, (r+1)*SIZE+c+1, (r+2)*SIZE+c+2, (r+3)*SIZE+c+3, (r+4)*SIZE+c+4]);
+    }
+  }
+  for (let r = 0; r <= SIZE - 5; r++) {
+    for (let c = 4; c < SIZE; c++) {
+      lines.push([r*SIZE+c, (r+1)*SIZE+c-1, (r+2)*SIZE+c-2, (r+3)*SIZE+c-3, (r+4)*SIZE+c-4]);
+    }
+  }
+  return lines;
+})();
+
+const boardEl = document.getElementById('board');
+const turnEl = document.getElementById('turn');
+const statusEl = document.getElementById('status');
+const simsInput = document.getElementById('sims');
+const simsVal = document.getElementById('simsVal');
+const xPctEl = document.getElementById('xPct');
+const oPctEl = document.getElementById('oPct');
+const dPctEl = document.getElementById('dPct');
+const xBar = document.getElementById('xBar');
+const oBar = document.getElementById('oBar');
+const dBar = document.getElementById('dBar');
+const timeInfo = document.getElementById('timeInfo');
+const themeToggle = document.getElementById('themeToggle');
+const confettiContainer = document.getElementById('confettiContainer');
+
+function toggleTheme() {
+  isDarkMode = !isDarkMode;
+  document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
+  themeToggle.textContent = isDarkMode ? '🌙 夜间模式' : '☀️ 白天模式';
+}
+
+function createConfetti() {
+  const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff', '#5f27cd'];
+  const emojis = ['🎉', '🎊', '✨', '🌟', '💫', '🎈', '🎯', '🏆'];
+  
+  for (let i = 0; i < 50; i++) {
+    const confetti = document.createElement('div');
+    confetti.className = 'confetti';
+    confetti.style.left = Math.random() * 100 + '%';
+    confetti.style.animationDelay = Math.random() * 2 + 's';
+    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    
+    if (Math.random() > 0.5) {
+      confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+      confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+    } else {
+      confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      confetti.style.fontSize = '12px';
+      confetti.style.display = 'flex';
+      confetti.style.alignItems = 'center';
+      confetti.style.justifyContent = 'center';
+    }
+    
+    confettiContainer.appendChild(confetti);
+    
+    setTimeout(() => {
+      if (confetti.parentNode) {
+        confetti.parentNode.removeChild(confetti);
+      }
+    }, 5000);
+  }
+}
+
+function highlightWinningCells(winningLine) {
+  if (!winningLine) return;
+  
+  const cells = boardEl.children;
+  winningLine.forEach(index => {
+    cells[index].classList.add('winner-cell');
+  });
+  
+  setTimeout(() => {
+    winningLine.forEach(index => {
+      cells[index].classList.remove('winner-cell');
+    });
+  }, 1800);
+}
+
+function renderBoard() {
+  boardEl.innerHTML = '';
+  for (let i=0;i<CELLS;i++){
+    const div = document.createElement('div');
+    div.className = 'cell' + (board[i] ? ' '+board[i] : '');
+    div.textContent = board[i] ?? '';
+    if (!gameOver && !board[i]) {
+      div.addEventListener('click', () => handleMove(i), {once:true});
+    } else {
+      div.classList.add('disabled');
+    }
+    boardEl.appendChild(div);
+  }
+  turnEl.textContent = nextPlayer;
+}
+
+function getAvailableMoves(b){ const m=[]; for(let i=0;i<b.length;i++) if(b[i]==null) m.push(i); return m; }
+
+function getWinner(b) {
+  for (const line of LINES) {
+    const first = b[line[0]];
+    if (!first) continue;
+    let ok = true;
+    for (let j=1;j<line.length;j++) if (b[line[j]] !== first) { ok=false; break; }
+    if (ok) return {winner: first, line: line};
+  }
+  return null;
+}
+
+function isGameOver(b){ return !!getWinner(b) || getAvailableMoves(b).length===0; }
+
+function handleMove(idx){
+  if (gameOver || board[idx]) return;
+  board[idx] = nextPlayer;
+  const winnerResult = getWinner(board);
+  if (winnerResult) {
+    gameOver = true;
+    statusEl.innerHTML = `游戏结束：<b>${winnerResult.winner}</b> 获胜`;
+    createConfetti();
+    highlightWinningCells(winnerResult.line);
+  } else if (getAvailableMoves(board).length===0) {
+    gameOver = true;
+    statusEl.textContent = `游戏结束：平局`;
+  } else {
+    nextPlayer = nextPlayer==='X' ? 'O' : 'X';
+    statusEl.innerHTML = `轮到：<b id="turn">${nextPlayer}</b>`;
+  }
+  renderBoard();
+  estimateAndRender();
+}
+
+function playRandomGame(b, player){
+  while(true){
+    const winner = getWinner(b);
+    if (winner) return winner.winner;
+    const moves = getAvailableMoves(b);
+    if (moves.length===0) return null;
+    const move = moves[(Math.random()*moves.length)|0];
+    b[move] = player;
+    player = player==='X' ? 'O' : 'X';
+  }
+}
+
+function simulateWinRate(b, player, simulations=1500){
+  let xWins=0, oWins=0, draws=0;
+  for (let i=0;i<simulations;i++){
+    const copy = b.slice();
+    const res = playRandomGame(copy, player);
+    if (res==='X') xWins++;
+    else if (res==='O') oWins++;
+    else draws++;
+  }
+  return {
+    x: xWins/simulations,
+    o: oWins/simulations,
+    d: draws/simulations
+  };
+}
+
+function estimateAndRender(){
+  const sims = +simsInput.value;
+  simsVal.textContent = sims;
+  const t0 = performance.now();
+  if (gameOver){
+    const w = getWinner(board);
+    const rates = w ? (w.winner==='X'?{x:1,o:0,d:0}:{x:0,o:1,d:0}) : {x:0,o:0,d:1};
+    updateBars(rates, 0);
+    return;
+  }
+  requestAnimationFrame(()=>{
+    const rates = simulateWinRate(board, nextPlayer, sims);
+    const t1 = performance.now();
+    updateBars(rates, t1 - t0);
+  });
+}
+
+function updateBars(rates, ms){
+  const toPct = v => Math.round(v*100);
+  xPctEl.textContent = toPct(rates.x) + '%';
+  oPctEl.textContent = toPct(rates.o) + '%';
+  dPctEl.textContent = toPct(rates.d) + '%';
+  xBar.style.width = (rates.x*100) + '%';
+  oBar.style.width = (rates.o*100) + '%';
+  dBar.style.width = (rates.d*100) + '%';
+  timeInfo.textContent = ms ? `${Math.round(ms)}ms` : '';
+}
+
+simsInput.addEventListener('input', ()=>{ simsVal.textContent = simsInput.value; });
+document.getElementById('rerun').addEventListener('click', estimateAndRender);
+document.getElementById('reset').addEventListener('click', ()=>{
+  board = Array(CELLS).fill(null);
+  nextPlayer = 'X';
+  gameOver = false;
+  statusEl.innerHTML = `轮到：<b id="turn">X</b>`;
+  renderBoard();
+  estimateAndRender();
+});
+themeToggle.addEventListener('click', toggleTheme);
+
+renderBoard();
+estimateAndRender();
+
+</script>
+</body>
+</html>
