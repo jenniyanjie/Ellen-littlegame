@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>9×9 数独小游戏</title>
+<style>
+  body { font-family: Arial, sans-serif; text-align: center; background: #f5f5f5; }
+  h1 { margin-top: 20px; }
+  table { border-collapse: collapse; margin: 20px auto; }
+  td {
+    border: 1px solid #999;
+    width: 40px; height: 40px;
+    text-align: center; font-size: 20px;
+  }
+  input {
+    width: 38px; height: 38px;
+    text-align: center; font-size: 18px;
+    border: none;
+    background: #fff;
+  }
+  .fixed { background: #ddd; font-weight: bold; }
+  .thick-right { border-right: 3px solid #000; }
+  .thick-bottom { border-bottom: 3px solid #000; }
+  button { padding: 8px 15px; font-size: 16px; margin: 5px; cursor: pointer; }
+</style>
+</head>
+<body>
+<h1>9×9 数独小游戏</h1>
+<div>
+  <button onclick="generateSudoku()">重新开始</button>
+  <button onclick="checkSudoku()">检查答案</button>
+  <button onclick="revealAnswer()">偷看答案</button>
+</div>
+<table id="sudoku"></table>
+<p id="message"></p>
+
+<script>
+function createEmptyBoard() {
+  return Array.from({ length: 9 }, () => Array(9).fill(0));
+}
+
+function isSafe(board, row, col, num) {
+  for (let i = 0; i < 9; i++) {
+    if (board[row][i] === num || board[i][col] === num) return false;
+  }
+  let startRow = Math.floor(row / 3) * 3;
+  let startCol = Math.floor(col / 3) * 3;
+  for (let r = 0; r < 3; r++) {
+    for (let c = 0; c < 3; c++) {
+      if (board[startRow + r][startCol + c] === num) return false;
+    }
+  }
+  return true;
+}
+
+function solveBoard(board) {
+  for (let row = 0; row < 9; row++) {
+    for (let col = 0; col < 9; col++) {
+      if (board[row][col] === 0) {
+        let nums = [1,2,3,4,5,6,7,8,9];
+        nums.sort(() => Math.random() - 0.5);
+        for (let num of nums) {
+          if (isSafe(board, row, col, num)) {
+            board[row][col] = num;
+            if (solveBoard(board)) return true;
+            board[row][col] = 0;
+          }
+        }
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function generateFullSudoku() {
+  let board = createEmptyBoard();
+  solveBoard(board);
+  return board;
+}
+
+function generatePuzzle(fullBoard, clues = 35) {
+  let puzzle = fullBoard.map(row => row.slice());
+  let removeCount = 81 - clues;
+  while (removeCount > 0) {
+    let r = Math.floor(Math.random() * 9);
+    let c = Math.floor(Math.random() * 9);
+    if (puzzle[r][c] !== 0) {
+      puzzle[r][c] = 0;
+      removeCount--;
+    }
+  }
+  return puzzle;
+}
+
+let solutionBoard = null;
+let puzzleBoard = null;
+
+function renderBoard(puzzle) {
+  const table = document.getElementById('sudoku');
+  table.innerHTML = '';
+  for (let r = 0; r < 9; r++) {
+    let tr = document.createElement('tr');
+    for (let c = 0; c < 9; c++) {
+      let td = document.createElement('td');
+      if ((c+1) % 3 === 0 && c < 8) td.classList.add('thick-right');
+      if ((r+1) % 3 === 0 && r < 8) td.classList.add('thick-bottom');
+
+      if (puzzle[r][c] !== 0) {
+        td.innerHTML = `<input type="text" value="${puzzle[r][c]}" readonly class="fixed">`;
+      } else {
+        td.innerHTML = `<input type="text" maxlength="1" oninput="this.value=this.value.replace(/[^1-9]/,'')">`;
+      }
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+}
+
+function generateSudoku() {
+  const full = generateFullSudoku();
+  const puzzle = generatePuzzle(full, 35);
+  solutionBoard = full;
+  puzzleBoard = puzzle;
+  renderBoard(puzzle);
+  document.getElementById('message').textContent = '';
+}
+
+function checkSudoku() {
+  let table = document.getElementById('sudoku');
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      let val = parseInt(table.rows[r].cells[c].querySelector('input').value);
+      if (val !== solutionBoard[r][c]) {
+        document.getElementById('message').textContent = '❌ 有错误，请继续加油！';
+        return;
+      }
+    }
+  }
+  document.getElementById('message').textContent = '🎉 恭喜，完成正确！';
+}
+
+// 新增“偷看答案”功能
+function revealAnswer() {
+  const table = document.getElementById('sudoku');
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      let cell = table.rows[r].cells[c].querySelector('input');
+      cell.value = solutionBoard[r][c];
+      cell.readOnly = true;
+      cell.classList.add('fixed');
+    }
+  }
+  document.getElementById('message').textContent = '🔍 已显示答案！';
+}
+
+generateSudoku();
+</script>
+</body>
+</html>
+
