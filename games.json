@@ -1,0 +1,16 @@
+[
+    {
+      "slug": "tic-tac-toe",
+      "title": "Ellen's Tic Tac Toe",
+      "desc": "带胜率分析的井字棋升级版",
+      "thumb": "games/tic-tac-toe/cover.png"
+    },
+    {
+      "slug": "sudoku",
+      "title": "Ellen's Sudoku",
+      "desc": "带“偷看答案”按钮的数独",
+      "thumb": "games/sudoku/cover.png"
+    }
+  ]
+  
+  
