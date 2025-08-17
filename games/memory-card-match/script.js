@@ -368,8 +368,8 @@ function showVictoryMessage() {
     victoryMessage.className = 'victory-message';
     victoryMessage.innerHTML = `
         <div>🎉 太棒了！🎉</div>
-        <div style="font-size: 0.8em; margin-top: 10px;">所有汉字和拼音都配对成功了！</div>
-        <div style="font-size: 0.6em; margin-top: 15px; opacity: 0.9;">你的拼音学习表现优秀！</div>
+        <div style="font-size: 0.8em; margin-top: 10px;">所有配对都成功了！</div>
+        <div style="font-size: 0.6em; margin-top: 15px; opacity: 0.9;">你的学习表现真棒😊！</div>
     `;
     
     document.body.appendChild(victoryMessage);
