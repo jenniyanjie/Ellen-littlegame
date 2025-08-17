@@ -1,35 +1,180 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>9×9 数独小游戏</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Ellen's Sudoku</title>
 <style>
-  body { font-family: Arial, sans-serif; text-align: center; background: #f5f5f5; }
-  h1 { margin-top: 20px; }
-  table { border-collapse: collapse; margin: 20px auto; }
-  td {
-    border: 1px solid #999;
-    width: 40px; height: 40px;
-    text-align: center; font-size: 20px;
+  :root {
+    --cell-size: min(40px, 9vw);
+    --border-color: #394457;
+    --bg-color: #f5f5f5;
+    --fixed-bg: #e2e8f0;
+    --button-bg: #3b82f6;
+    --button-hover: #2563eb;
   }
-  input {
-    width: 38px; height: 38px;
-    text-align: center; font-size: 18px;
+  
+  * { box-sizing: border-box; }
+  
+  body { 
+    font-family: system-ui, -apple-system, Arial, sans-serif; 
+    text-align: center; 
+    background: var(--bg-color);
+    margin: 0;
+    padding: 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  h1 { 
+    margin: 16px 0;
+    font-size: clamp(24px, 5vw, 32px);
+  }
+  
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 16px;
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  button { 
+    flex: 1;
+    min-width: 120px;
+    padding: 12px;
+    font-size: 16px;
     border: none;
-    background: #fff;
+    border-radius: 8px;
+    background: var(--button-bg);
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s;
   }
-  .fixed { background: #ddd; font-weight: bold; }
-  .thick-right { border-right: 3px solid #000; }
-  .thick-bottom { border-bottom: 3px solid #000; }
-  button { padding: 8px 15px; font-size: 16px; margin: 5px; cursor: pointer; }
+  
+  button:hover {
+    background: var(--button-hover);
+  }
+  
+  table { 
+    border-collapse: collapse; 
+    margin: 0 auto;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  td {
+    border: 1px solid #ddd;
+    width: var(--cell-size); 
+    height: var(--cell-size);
+    text-align: center;
+    position: relative;
+    padding: 0;
+  }
+  
+  input {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: calc(var(--cell-size) * 0.5);
+    border: none;
+    padding: 0;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  
+  input:focus {
+    outline: 2px solid var(--button-bg);
+    outline-offset: -2px;
+  }
+  
+  .fixed { 
+    background: var(--fixed-bg); 
+    font-weight: 600;
+  }
+  
+  /* Style for revealed answer numbers */
+  .revealed-answer {
+    color: #2563eb;  /* 蓝色答案 */
+    font-weight: 500;
+    font-style: italic;
+    background: #eff6ff;  /* 淡蓝色背景 */
+  }
+  
+  /* Style for incorrect numbers */
+  .incorrect {
+    color: #dc2626;  /* 红色错误数字 */
+    background: #fef2f2;  /* 淡红色背景 */
+    position: relative;
+  }
+  
+  .incorrect::after {
+    content: '×';
+    position: absolute;
+    top: -8px;
+    right: 0;
+    font-size: 12px;
+    color: #dc2626;
+    font-weight: bold;
+  }
+  
+  .thick-right { 
+    border-right: 3px solid var(--border-color); 
+  }
+  
+  .thick-bottom { 
+    border-bottom: 3px solid var(--border-color); 
+  }
+  
+  #message {
+    margin: 16px 0;
+    min-height: 24px;
+    font-size: 16px;
+  }
+  
+  @media (max-width: 480px) {
+    body {
+      padding: 8px;
+    }
+    
+    .controls {
+      padding: 0 8px;
+    }
+    
+    button {
+      padding: 10px;
+      min-width: 100px;
+      font-size: 14px;
+    }
+    
+    input {
+      font-size: calc(var(--cell-size) * 0.6);
+    }
+  }
+  
+  @media (min-width: 768px) {
+    :root {
+      --cell-size: 44px;
+    }
+  }
 </style>
 </head>
 <body>
-<h1>9×9 数独小游戏</h1>
-<div>
-  <button onclick="generateSudoku()">重新开始</button>
-  <button onclick="checkSudoku()">检查答案</button>
-  <button onclick="revealAnswer()">偷看答案</button>
+<h1>9×9 Sudoku Game</h1>
+<div class="controls">
+  <button onclick="generateSudoku()">New Game</button>
+  <button onclick="checkSudoku()">Check Answer</button>
+  <button onclick="revealAnswer()">Peek Answer</button>
 </div>
 <table id="sudoku"></table>
 <p id="message"></p>
@@ -124,38 +269,127 @@ function generateSudoku() {
   puzzleBoard = puzzle;
   renderBoard(puzzle);
   document.getElementById('message').textContent = '';
+  
+  // Reset peek answer state
+  isShowingAnswer = false;
+  originalPuzzle = null;
+  const peekButton = document.querySelector('button[onclick="revealAnswer()"]');
+  peekButton.textContent = 'Peek Answer';
+  peekButton.style.background = '';
+  
+  // Clear any incorrect marks
+  document.querySelectorAll('.incorrect').forEach(cell => {
+    cell.classList.remove('incorrect');
+  });
 }
 
 function checkSudoku() {
   let table = document.getElementById('sudoku');
-  for (let r = 0; r < 9; r++) {
-    for (let c = 0; c < 9; c++) {
-      let val = parseInt(table.rows[r].cells[c].querySelector('input').value);
-      if (val !== solutionBoard[r][c]) {
-        document.getElementById('message').textContent = '❌ 有错误，请继续加油！';
-        return;
-      }
-    }
-  }
-  document.getElementById('message').textContent = '🎉 恭喜，完成正确！';
-}
-
-// 新增“偷看答案”功能
-function revealAnswer() {
-  const table = document.getElementById('sudoku');
+  let hasError = false;
+  let filledCount = 0;
+  let totalCells = 81;
+  
+  // 先清除所有之前的错误标记
+  document.querySelectorAll('.incorrect').forEach(cell => {
+    cell.classList.remove('incorrect');
+  });
+  
+  // 检查所有已填入的数字
   for (let r = 0; r < 9; r++) {
     for (let c = 0; c < 9; c++) {
       let cell = table.rows[r].cells[c].querySelector('input');
-      cell.value = solutionBoard[r][c];
-      cell.readOnly = true;
-      cell.classList.add('fixed');
+      let val = cell.value.trim();
+      
+      // 跳过空格
+      if (!val) continue;
+      
+      filledCount++;
+      val = parseInt(val);
+      
+      // 检查数字是否正确
+      if (val !== solutionBoard[r][c]) {
+        cell.classList.add('incorrect');
+        hasError = true;
+      }
     }
   }
-  document.getElementById('message').textContent = '🔍 已显示答案！';
+  
+  // 更新消息
+  const msgEl = document.getElementById('message');
+  if (filledCount === 0) {
+    msgEl.textContent = '❗ Please fill in some numbers first!';
+  } else if (hasError) {
+    msgEl.textContent = `❌ Found ${document.querySelectorAll('.incorrect').length} incorrect numbers`;
+  } else if (filledCount < totalCells) {
+    msgEl.textContent = `✅ All ${filledCount} numbers correct, ${totalCells - filledCount} to go!`;
+  } else {
+    msgEl.textContent = '🎉 Congratulations, well done!';
+  }
+}
+
+// Store original puzzle state
+let originalPuzzle = null;
+let isShowingAnswer = false;
+
+// Toggle between "Peek Answer" and "Continue Game"
+function revealAnswer() {
+  const table = document.getElementById('sudoku');
+  const peekButton = document.querySelector('button[onclick="revealAnswer()"]');
+  
+  if (!isShowingAnswer) {
+    // Save current game state
+    originalPuzzle = Array(9).fill().map(() => Array(9).fill(0));
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        let cell = table.rows[r].cells[c].querySelector('input');
+        originalPuzzle[r][c] = {
+          value: cell.value,
+          readOnly: cell.readOnly,
+          isFixed: cell.classList.contains('fixed')
+        };
+      }
+    }
+    
+    // Show answer
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        let cell = table.rows[r].cells[c].querySelector('input');
+        // 如果不是原始数字，使用特殊样式显示答案
+        if (!cell.classList.contains('fixed')) {
+          cell.value = solutionBoard[r][c];
+          cell.readOnly = true;
+          cell.classList.add('revealed-answer');
+        }
+      }
+    }
+    document.getElementById('message').textContent = '🔍 Answer revealed!';
+    peekButton.textContent = 'Continue';
+    peekButton.style.background = 'var(--button-hover)';
+  } else {
+    // Restore original game state
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        let cell = table.rows[r].cells[c].querySelector('input');
+        let original = originalPuzzle[r][c];
+        cell.value = original.value;
+        cell.readOnly = original.readOnly;
+        cell.classList.remove('revealed-answer');
+        if (!original.isFixed) {
+          cell.classList.remove('fixed');
+        }
+      }
+    }
+    document.getElementById('message').textContent = '';
+    peekButton.textContent = 'Peek Answer';
+    peekButton.style.background = '';
+  }
+  
+  isShowingAnswer = !isShowingAnswer;
 }
 
 generateSudoku();
 </script>
 </body>
 </html>
+
 

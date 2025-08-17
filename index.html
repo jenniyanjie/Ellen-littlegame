@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Mini Game Collection</title>
+  <title>Ellen's Mini Game Collection</title>
   <style>
     :root{--bg:#0e1116;--panel:#141a22;--fg:#e6edf3;--muted:#94a3b8;--card:#1b2330;--br:14px}
     *{box-sizing:border-box} html,body{margin:0;height:100%}
@@ -19,14 +19,26 @@
     .meta{padding:12px}
     .title{margin:0 0 4px;font-weight:600}
     .desc{margin:0;color:var(--muted);font-size:14px}
-    .actions{padding:12px;display:flex;gap:8px;margin-top:auto}
-    .btn{flex:1;text-align:center;padding:10px 12px;border-radius:12px;border:1px solid #394457;background:#2a3443;color:var(--fg);text-decoration:none}
+    .actions{padding:12px;display:flex;gap:8px;margin-top:auto;align-items:center}
+    .btn{flex:1;text-align:center;padding:10px 12px;border-radius:12px;border:1px solid #394457;background:#2a3443;color:var(--fg);text-decoration:none;transition:all 0.2s ease}
+    .btn:hover{background:#334154;transform:translateY(-1px);box-shadow:0 4px 8px rgba(0,0,0,0.2)}
+    .btn.primary{background:linear-gradient(135deg,#667eea,#764ba2);border-color:#667eea;font-weight:600}
+    .btn.primary:hover{background:linear-gradient(135deg,#5a6fd8,#6c4a9e);box-shadow:0 4px 12px rgba(102,126,234,0.3)}
+    .btn.secondary{flex:none;width:44px;padding:10px;background:transparent;border-color:#3a4553;color:var(--muted);font-size:16px;display:flex;align-items:center;justify-content:center}
+    .btn.secondary:hover{background:#2a3443;color:var(--fg);border-color:#667eea}
+    .card{transition:transform 0.2s ease,box-shadow 0.2s ease}
+    .card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(0,0,0,0.3)}
+    @media (max-width:768px){
+      .actions{flex-direction:column;gap:10px}
+      .btn.secondary{width:100%;flex:1}
+      .btn.secondary:after{content:" Open in new tab";margin-left:8px;font-size:14px}
+    }
     footer{color:#718096;text-align:center;padding:24px}
   </style>
 </head>
 <body>
   <header>
-    <h1>🎮 My Mini Game Collection</h1>
+    <h1>🎮 Ellen's Mini Game Collection</h1>
     <div class="toolbar">
       <input id="q" type="search" placeholder="Search: title/description…" aria-label="Search games">
     </div>
@@ -36,7 +48,7 @@
     <div id="grid" class="grid" role="list"></div>
   </main>
 
-  <footer>© <span id="year"></span> JJY's Arcade</footer>
+  <footer>© <span id="year"></span> Ellen's Arcade</footer>
 
   <script>
     const state = { games: [], filtered: [] };
@@ -48,8 +60,9 @@
       } catch (e) {
         // Fallback sample data to avoid a blank page if JSON is missing
         state.games = [
-          { slug:'tic-tac-toe', title:'8×8 Tic Tac Toe', desc:'With win-rate analysis', thumb:'games/tic-tac-toe/cover.png' },
-          { slug:'sudoku', title:'9×9 Sudoku', desc:"Sudoku with a 'Peek Answer' button", thumb:'games/sudoku/cover.png' },
+          { slug:'tic-tac-toe', title:'Ellen\'s Tic Tac Toe', desc:'With win-rate analysis', thumb:'games/tic-tac-toe/cover.png' },
+          { slug:'sudoku', title:'Ellen\'s Sudoku', desc:"Sudoku with a 'Peek Answer' button", thumb:'games/sudoku/cover.png' },
+          { slug:'memory-card-match', title:'Ellen\'s Memory Card Match', desc:'Memory card match game', thumb:'games/memory-card-match/cover.png' },
         ];
       }
       state.filtered = state.games;
@@ -79,17 +92,18 @@
         const actions = document.createElement('div');
         actions.className = 'actions';
         const play = document.createElement('a');
-        play.className = 'btn';
+        play.className = 'btn primary';
         play.href = `./play.html?game=${encodeURIComponent(g.slug)}`;
-        play.textContent = 'Play';
+        play.textContent = '🎮 Play now';
         actions.appendChild(play);
 
         const open = document.createElement('a');
-        open.className = 'btn';
+        open.className = 'btn secondary';
         open.href = `./games/${encodeURIComponent(g.slug)}/`;
         open.target = '_blank';
         open.rel = 'noopener';
-        open.textContent = 'Open in new tab';
+        open.textContent = '↗';
+        open.title = 'Open in new tab';
         actions.appendChild(open);
 
         card.appendChild(actions);

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -62,8 +62,10 @@
   .bar.x>span{background:#5bd1a5} .bar.o>span{background:#f56565} .bar.d>span{background:#7f8ea3}
   .nums{display:flex;justify-content:space-between;font-size:13px;margin-top:6px;color:var(--muted)}
   .btns{display:flex;gap:8px;margin-top:6px}
-  button{background:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:10px;padding:8px 10px;font:inherit;cursor:pointer;transition:background-color 0.2s}
+  button{background:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:10px;padding:8px 10px;font:inherit;cursor:pointer;transition:all 0.2s}
   button:hover{background:var(--btn-hover)}
+  button:disabled{opacity:0.5;cursor:not-allowed;background:var(--btn-bg)}
+  button:disabled:hover{background:var(--btn-bg)}
   
   .confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1000}
   .confetti{position:absolute;width:10px;height:10px;animation:confetti-fall 3s linear forwards}
@@ -78,44 +80,108 @@
     50%{transform:scale(1.1)}
   }
   
-  @media (max-width:1000px){.wrap{grid-template-columns:1fr}}
+  @media (max-width:1000px){
+    .wrap{
+      grid-template-columns: 1fr;
+      padding: 0 12px;
+      margin: 16px auto;
+    }
+    
+    header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .theme-toggle {
+      align-self: flex-end;
+      margin-top: -32px;
+    }
+    
+    h1 {
+      font-size: 18px;
+    }
+    
+    .sub {
+      font-size: 12px;
+    }
+    
+    :root {
+      --cell: min(42px, 8vw);
+      --gap: 3px;
+    }
+    
+    .board {
+      padding: 12px;
+      border-radius: 10px;
+    }
+    
+    .side {
+      padding: 12px;
+      border-radius: 10px;
+    }
+    
+    .row {
+      gap: 8px;
+    }
+    
+    .row label {
+      min-width: 64px;
+      font-size: 12px;
+    }
+    
+    .status {
+      font-size: 13px;
+      padding: 8px;
+    }
+    
+    button {
+      padding: 6px 8px;
+      font-size: 13px;
+    }
+    
+    .nums {
+      font-size: 12px;
+    }
+  }
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div>
-        <h1>11×11 Tic Tac Toe（含胜率分析）</h1>
-        <div class="sub">玩家轮流点击落子。右侧实时用蒙特卡洛模拟估计当前局面的 X / O / 平局概率。</div>
+        <h1>Ellen's Tic Tac Toe with Win Rate Analysis</h1>
+        <div class="sub">Players take turns clicking to place their marks. Monte Carlo simulation estimates X/O/Draw probabilities in real-time.</div>
       </div>
-      <button class="theme-toggle" id="themeToggle">🌙 夜间模式</button>
+      <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
     </header>
 
     <div class="board" id="board"></div>
 
     <aside class="side">
-      <div class="status" id="status">轮到：<b id="turn">X</b></div>
+      <div class="status" id="status">Turn: <b id="turn">X</b></div>
 
       <div class="row">
-        <label for="sims">模拟次数</label>
+        <label for="sims">Simulations</label>
         <input id="sims" type="range" min="500" max="5000" step="500" value="1500" />
         <span class="meta" id="simsVal">1500</span>
       </div>
 
       <div class="row">
-        <label>胜利条件</label>
-        <span class="meta">5 连成一线即胜</span>
+        <label>Win Condition</label>
+        <span class="meta">5 in a row to win</span>
       </div>
 
       <div class="btns">
-        <button id="rerun">重新估计</button>
-        <button id="reset">重开一局</button>
+        <button id="rerun">Re-estimate</button>
+        <button id="undo">Undo Move</button>
+        <button id="reset">New Game</button>
       </div>
 
       <div style="margin-top:14px">
         <div class="nums">
-          <span>X 胜率：<b id="xPct">--%</b></span>
-          <span>O 胜率：<b id="oPct">--%</b></span>
+          <span>X Win: <b id="xPct">--%</b></span>
+          <span>O Win: <b id="oPct">--%</b></span>
         </div>
         <div class="bars">
           <div class="bar x"><span id="xBar" style="width:0%"></span></div>
@@ -123,7 +189,7 @@
           <div class="bar d"><span id="dBar" style="width:0%"></span></div>
         </div>
         <div class="nums">
-          <span>平局率：<b id="dPct">--%</b></span>
+          <span>Draw: <b id="dPct">--%</b></span>
           <span class="meta" id="timeInfo"></span>
         </div>
       </div>
@@ -139,6 +205,7 @@ let board = Array(CELLS).fill(null);
 let nextPlayer = 'X';
 let gameOver = false;
 let isDarkMode = true;
+let gameHistory = []; // 游戏历史记录
 
 // LINES 生成保持不变，自动适配 SIZE
 const LINES = (() => {
@@ -184,7 +251,7 @@ const confettiContainer = document.getElementById('confettiContainer');
 function toggleTheme() {
   isDarkMode = !isDarkMode;
   document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
-  themeToggle.textContent = isDarkMode ? '🌙 夜间模式' : '☀️ 白天模式';
+  themeToggle.textContent = isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode';
 }
 
 function createConfetti() {
@@ -234,6 +301,29 @@ function highlightWinningCells(winningLine) {
   }, 1800);
 }
 
+// 悔棋功能
+function undoMove() {
+  if (gameHistory.length === 0) return;
+  
+  const lastState = gameHistory.pop();
+  board = lastState.board;
+  nextPlayer = lastState.nextPlayer;
+  gameOver = lastState.gameOver;
+  
+  // 重置状态显示
+  statusEl.innerHTML = `Turn: <b id="turn">${nextPlayer}</b>`;
+  
+  renderBoard();
+  estimateAndRender();
+  updateUndoButton();
+}
+
+// 更新悔棋按钮状态
+function updateUndoButton() {
+  const undoBtn = document.getElementById('undo');
+  undoBtn.disabled = gameHistory.length === 0;
+}
+
 function renderBoard() {
   boardEl.innerHTML = '';
   for (let i=0;i<CELLS;i++){
@@ -267,22 +357,31 @@ function isGameOver(b){ return !!getWinner(b) || getAvailableMoves(b).length===0
 
 function handleMove(idx){
   if (gameOver || board[idx]) return;
+  
+  // 保存当前状态到历史记录
+  gameHistory.push({
+    board: board.slice(), // 创建棋盘副本
+    nextPlayer: nextPlayer,
+    gameOver: gameOver
+  });
+  
   board[idx] = nextPlayer;
   const winnerResult = getWinner(board);
   if (winnerResult) {
     gameOver = true;
-    statusEl.innerHTML = `游戏结束：<b>${winnerResult.winner}</b> 获胜`;
+    statusEl.innerHTML = `Game Over: <b>${winnerResult.winner}</b> Wins!`;
     createConfetti();
     highlightWinningCells(winnerResult.line);
   } else if (getAvailableMoves(board).length===0) {
     gameOver = true;
-    statusEl.textContent = `游戏结束：平局`;
+    statusEl.textContent = `Game Over: Draw!`;
   } else {
     nextPlayer = nextPlayer==='X' ? 'O' : 'X';
-    statusEl.innerHTML = `轮到：<b id="turn">${nextPlayer}</b>`;
+    statusEl.innerHTML = `Turn: <b id="turn">${nextPlayer}</b>`;
   }
   renderBoard();
   estimateAndRender();
+  updateUndoButton();
 }
 
 function playRandomGame(b, player){
@@ -343,18 +442,22 @@ function updateBars(rates, ms){
 
 simsInput.addEventListener('input', ()=>{ simsVal.textContent = simsInput.value; });
 document.getElementById('rerun').addEventListener('click', estimateAndRender);
+document.getElementById('undo').addEventListener('click', undoMove);
 document.getElementById('reset').addEventListener('click', ()=>{
   board = Array(CELLS).fill(null);
   nextPlayer = 'X';
   gameOver = false;
-  statusEl.innerHTML = `轮到：<b id="turn">X</b>`;
+  gameHistory = []; // 清空历史记录
+  statusEl.innerHTML = `Turn: <b id="turn">X</b>`;
   renderBoard();
   estimateAndRender();
+  updateUndoButton();
 });
 themeToggle.addEventListener('click', toggleTheme);
 
 renderBoard();
 estimateAndRender();
+updateUndoButton();
 
 </script>
 </body>

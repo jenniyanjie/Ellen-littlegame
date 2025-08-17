@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ellen的词汇配对小游戏</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Ellen的词汇配对小游戏</h1>
+    <div class="selector-container">
+        <div class="mode-selector">
+            <label for="mode-select">学习模式:</label>
+            <select id="mode-select">
+                <option value="chinese">中文拼音对照</option>
+                <option value="english">英文中文对照</option>
+            </select>
+        </div>
+        <div class="week-selector">
+            <label for="week-select">选择学习日期:</label>
+            <select id="week-select">
+                <option value="1">2025-08-05：情感与物品</option>
+                <option value="2">2025-08-12：动作与交际</option>
+                <option value="3">2025-08-19：生活与情绪</option>
+                <option value="4">2025-08-26：沟通与学习</option>
+                <option value="5">2025-09-02：意愿与事物</option>
+            </select>
+        </div>
+    </div>
+    <div class="game-info">
+        <p>当前学习: <span id="current-week-title">2025-08-05：情感与物品</span></p>
+        <p>配对数: <span id="matches">0</span> / <span id="total-pairs">0</span></p>
+    </div>
+    <div class="game-board" id="game-board"></div>
+    <button id="reset-button">重新开始</button>
+    <div class="confetti-container" id="confetti-container"></div>
+    <script src="script.js"></script>
+</body>
+</html>
