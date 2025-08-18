@@ -93,6 +93,12 @@
     -webkit-appearance: none;
     position: relative;
     z-index: 10;
+    caret-color: transparent;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
   
   input:focus {
@@ -118,6 +124,14 @@
     color: #dc2626;  /* 红色错误数字 */
     background: #fef2f2;  /* 淡红色背景 */
     position: relative;
+  }
+  
+  /* Style for hint numbers */
+  .hint-cell {
+    color: #d97706 !important;  /* 橙色提示数字 */
+    background: #fef3c7 !important;  /* 淡黄色背景 */
+    font-weight: 600;
+    border: 2px solid #f59e0b !important;
   }
   
   .incorrect::after {
@@ -331,6 +345,51 @@
     font-weight: 500;
   }
   
+  /* Score board styles */
+  .score-board {
+    margin: 16px auto;
+    max-width: 400px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 2px solid #e5e7eb;
+  }
+  
+  .score-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  
+  .score-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .score-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1f2937;
+    font-family: 'Courier New', monospace;
+  }
+  
+  .difficulty-multiplier {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--button-bg);
+    padding: 4px 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 6px;
+  }
+  
   /* Notes grid styles */
   .notes-grid {
     display: grid;
@@ -344,7 +403,13 @@
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 5;
+    z-index: 10;
+  }
+  
+  /* In notes mode, notes grid displays below transparent input and doesn't receive clicks */
+  body.notes-mode-active .cell-notes .notes-grid {
+    z-index: 10; /* Below transparent input (z-index: 25) */
+    pointer-events: none !important; /* Completely disable all mouse events */
   }
   
   .notes-cell {
@@ -364,9 +429,32 @@
     font-weight: 600;
   }
   
-  /* Hide regular input only when notes mode is active AND cell has notes */
+  /* Make regular input transparent but clickable when notes mode is active AND cell has notes */
   body.notes-mode-active .cell-notes .regular-input {
-    display: none;
+    opacity: 0;
+    background: rgba(255, 0, 0, 0.1) !important; /* Temporary debug: semi-transparent red */
+    color: transparent !important;
+    border: 2px solid red !important; /* Temporary debug: red border */
+    pointer-events: auto !important;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 25 !important; /* Highest z-index to ensure clickability */
+    box-sizing: border-box;
+  }
+  
+  /* Special focus ring in notes mode */
+  body.notes-mode-active .regular-input:focus {
+    outline: 2px solid #fbbf24;
+    outline-offset: -2px;
+  }
+  
+  /* Cell selection indicator for notes mode */
+  .cell-selected-notes {
+    box-shadow: inset 0 0 0 3px #fbbf24 !important;
+    background: rgba(251, 191, 36, 0.1) !important;
   }
   
   /* Show notes grid when cell has notes */
@@ -482,6 +570,20 @@
     .notes-cell {
       font-size: 8px;
     }
+    
+    .score-board {
+      margin: 12px auto;
+      padding: 10px 16px;
+      max-width: 350px;
+    }
+    
+    .score-value {
+      font-size: 20px;
+    }
+    
+    .difficulty-multiplier {
+      font-size: 14px;
+    }
   }
   
   @media (min-width: 768px) {
@@ -495,6 +597,7 @@
 <h1>9×9 Sudoku Game</h1>
 <div class="controls">
   <button onclick="generateSudoku()">New Game</button>
+  <button onclick="getHint()">💡 Hint</button>
   <button onclick="checkSudoku()">Check Answer</button>
   <button onclick="revealAnswer()">Peek Answer</button>
 </div>
@@ -503,19 +606,30 @@
   <div class="difficulty-title">Difficulty Level:</div>
   <div class="difficulty-buttons">
     <button class="difficulty-btn active" onclick="setDifficulty('easy')" data-level="easy">
-      <span class="level-name">Easy</span>
-      <span class="level-desc">40-45 clues</span>
+      <span class="level-name">Beginner</span>
+      <span class="level-desc">50 clues</span>
     </button>
     <button class="difficulty-btn" onclick="setDifficulty('medium')" data-level="medium">
-      <span class="level-name">Medium</span>
-      <span class="level-desc">30-35 clues</span>
+      <span class="level-name">Casual</span>
+      <span class="level-desc">40 clues</span>
     </button>
     <button class="difficulty-btn" onclick="setDifficulty('hard')" data-level="hard">
-      <span class="level-name">Hard</span>
-      <span class="level-desc">25-30 clues</span>
+      <span class="level-name">Challenge</span>
+      <span class="level-desc">32 clues</span>
     </button>
   </div>
 </div>
+<div class="score-board">
+  <div class="score-item">
+    <span class="score-label">Score:</span>
+    <span class="score-value" id="current-score">1500</span>
+  </div>
+  <div class="score-item">
+    <span class="score-label">Difficulty:</span>
+    <span class="difficulty-multiplier" id="difficulty-multiplier">1.0x</span>
+  </div>
+</div>
+
 <table id="sudoku"></table>
 <p id="message"></p>
 
@@ -607,12 +721,20 @@ let selectedCell = null; // Track selected cell {row, col}
 let currentDifficulty = 'easy'; // Current difficulty level
 let isNotesMode = false; // Notes mode state
 let notesBoard = null; // Store notes for each cell
+let currentScore = 1500; // Starting score (increased for more margin)
 
-// Difficulty settings
+// Difficulty settings with scoring multipliers
 const difficultySettings = {
-  easy: { clues: 42, name: 'Easy' },
-  medium: { clues: 32, name: 'Medium' },
-  hard: { clues: 27, name: 'Hard' }
+  easy: { clues: 50, name: 'Beginner', multiplier: 1.0 },
+  medium: { clues: 40, name: 'Casual', multiplier: 1.2 },
+  hard: { clues: 32, name: 'Challenge', multiplier: 1.5 }
+};
+
+// Scoring system
+const scoreSettings = {
+  correct: 15,    // Base points for correct answer (increased)
+  incorrect: -10, // Points deducted for wrong answer (reduced penalty)
+  completion: 800 // Bonus for completing puzzle (increased)
 };
 
 // Initialize notes board
@@ -620,6 +742,62 @@ function initNotesBoard() {
   notesBoard = Array.from({ length: 9 }, () => 
     Array.from({ length: 9 }, () => new Set())
   );
+}
+
+// Score management functions
+function updateScore(points) {
+  const multiplier = difficultySettings[currentDifficulty].multiplier;
+  const adjustedPoints = Math.round(points * multiplier);
+  currentScore = Math.max(0, currentScore + adjustedPoints); // Prevent negative scores
+  
+  // Update display
+  document.getElementById('current-score').textContent = currentScore;
+  
+  // Show score change animation
+  showScoreChange(adjustedPoints);
+}
+
+function showScoreChange(points) {
+  const scoreElement = document.getElementById('current-score');
+  const changeElement = document.createElement('div');
+  
+  changeElement.textContent = points > 0 ? `+${points}` : `${points}`;
+  changeElement.style.cssText = `
+    position: absolute;
+    font-size: 14px;
+    font-weight: 600;
+    color: ${points > 0 ? '#10b981' : '#ef4444'};
+    pointer-events: none;
+    animation: scoreFloat 1.5s ease-out forwards;
+    z-index: 100;
+  `;
+  
+  // Add floating animation
+  const style = document.createElement('style');
+  style.textContent = `
+    @keyframes scoreFloat {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-30px); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+  
+  scoreElement.parentElement.style.position = 'relative';
+  scoreElement.parentElement.appendChild(changeElement);
+  
+  setTimeout(() => {
+    changeElement.remove();
+  }, 1500);
+}
+
+function resetScore() {
+  currentScore = 1500;
+  document.getElementById('current-score').textContent = currentScore;
+}
+
+function updateDifficultyDisplay() {
+  const multiplier = difficultySettings[currentDifficulty].multiplier;
+  document.getElementById('difficulty-multiplier').textContent = `${multiplier}x`;
 }
 
 function renderBoard(puzzle) {
@@ -644,7 +822,13 @@ function renderBoard(puzzle) {
         
         td.classList.add(cellClass);
         td.innerHTML = `
-          <input type="text" onclick="selectCell(${r}, ${c})" class="regular-input" maxlength="1" onkeydown="return false;">
+          <input type="text" onclick="selectCell(${r}, ${c})" class="regular-input" maxlength="1" 
+                 onkeydown="return false;" 
+                 onkeypress="return false;" 
+                 onkeyup="return false;"
+                 oninput="handleInput(event, ${r}, ${c})"
+                 onpaste="return false;"
+                 ondrop="return false;">
           <div class="notes-grid">
             ${renderNotesGrid(r, c)}
           </div>
@@ -656,14 +840,15 @@ function renderBoard(puzzle) {
   }
 }
 
-// Render 3x3 notes grid for a cell
+// Render 3x3 notes grid for a cell (display only, no click events)
 function renderNotesGrid(row, col) {
   let html = '';
   for (let i = 1; i <= 9; i++) {
     const hasNote = notesBoard && notesBoard[row][col] && notesBoard[row][col].has(i);
     const cellClass = hasNote ? 'notes-cell filled' : 'notes-cell';
     const content = hasNote ? i : '';
-    html += `<div class="${cellClass}" onclick="toggleNote(${row}, ${col}, ${i})">${content}</div>`;
+    // Removed onclick event - all input must go through number panel
+    html += `<div class="${cellClass}">${content}</div>`;
   }
   return html;
 }
@@ -687,6 +872,26 @@ function toggleNotesMode() {
     toggleBtn.classList.remove('active');
   }
   
+  // Update selection display to match new mode
+  if (selectedCell) {
+    const table = document.getElementById('sudoku');
+    const cell = table.rows[selectedCell.row].cells[selectedCell.col].querySelector('input');
+    const td = table.rows[selectedCell.row].cells[selectedCell.col];
+    
+    // Clear all selection styles
+    cell.classList.remove('selected');
+    td.classList.remove('cell-selected-notes');
+    
+    // Apply appropriate selection style for current mode
+    if (!cell.classList.contains('fixed')) {
+      if (isNotesMode) {
+        td.classList.add('cell-selected-notes');
+      } else {
+        cell.classList.add('selected');
+      }
+    }
+  }
+  
   // Show feedback message
   const modeText = isNotesMode ? 'Notes Mode' : 'Normal Mode';
   const icon = isNotesMode ? '📝' : '🔢';
@@ -696,34 +901,7 @@ function toggleNotesMode() {
   }, 2000);
 }
 
-// Toggle note in a cell (for notes mode)
-function toggleNote(row, col, num) {
-  if (!isNotesMode) return;
-  
-  // Don't allow notes on fixed cells
-  const table = document.getElementById('sudoku');
-  const input = table.rows[row].cells[col].querySelector('input');
-  if (input && input.classList.contains('fixed')) return;
-  
-  // Clear regular number when adding notes
-  if (input && input.value) {
-    input.value = '';
-  }
-  
-  // Toggle note
-  if (!notesBoard[row][col]) {
-    notesBoard[row][col] = new Set();
-  }
-  
-  if (notesBoard[row][col].has(num)) {
-    notesBoard[row][col].delete(num);
-  } else {
-    notesBoard[row][col].add(num);
-  }
-  
-  // Re-render the cell
-  renderSingleCell(row, col);
-}
+// toggleNote function removed - all notes operations now go through fillNumber function and number panel
 
 // Render a single cell (helper function)
 function renderSingleCell(row, col) {
@@ -731,9 +909,10 @@ function renderSingleCell(row, col) {
   const td = table.rows[row].cells[col];
   const puzzle = puzzleBoard;
   
-  // Preserve border classes
+  // Preserve border classes and selection state
   const thickRight = td.classList.contains('thick-right');
   const thickBottom = td.classList.contains('thick-bottom');
+  const isSelected = selectedCell && selectedCell.row === row && selectedCell.col === col;
   
   if (puzzle[row][col] !== 0) {
     // Fixed cell
@@ -745,14 +924,28 @@ function renderSingleCell(row, col) {
     // Empty cell - support both regular input and notes
     const hasNotes = notesBoard && notesBoard[row][col] && notesBoard[row][col].size > 0;
     const cellClass = hasNotes ? 'cell-notes' : 'cell-regular';
-    const isSelected = selectedCell && selectedCell.row === row && selectedCell.col === col;
     
     td.className = '';
     if (thickRight) td.classList.add('thick-right');
     if (thickBottom) td.classList.add('thick-bottom');
     td.classList.add(cellClass);
+    
+    // Restore selection state after re-rendering
+    if (isSelected) {
+      if (isNotesMode) {
+        td.classList.add('cell-selected-notes');
+      }
+      // Don't add 'selected' to input in notes mode as it might be transparent
+    }
+    
     td.innerHTML = `
-      <input type="text" onclick="selectCell(${row}, ${col})" class="regular-input ${isSelected ? 'selected' : ''}" maxlength="1" onkeydown="return false;">
+      <input type="text" onclick="selectCell(${row}, ${col})" class="regular-input ${isSelected && !isNotesMode ? 'selected' : ''}" maxlength="1" 
+             onkeydown="return false;" 
+             onkeypress="return false;" 
+             onkeyup="return false;"
+             oninput="handleInput(event, ${row}, ${col})"
+             onpaste="return false;"
+             ondrop="return false;">
       <div class="notes-grid">
         ${renderNotesGrid(row, col)}
       </div>
@@ -770,12 +963,31 @@ function setDifficulty(level) {
   });
   document.querySelector(`[data-level="${level}"]`).classList.add('active');
   
-  // Show feedback message
+  // Update difficulty multiplier display
+  updateDifficultyDisplay();
+  
+  // Generate new game with the selected difficulty
+  generateSudoku();
+  
+  // Show feedback message (will override the generation message briefly)
   const settings = difficultySettings[level];
-  document.getElementById('message').textContent = `🎯 Difficulty set to ${settings.name} (${settings.clues} clues)`;
   setTimeout(() => {
-    document.getElementById('message').textContent = '';
-  }, 2000);
+    document.getElementById('message').textContent = `🎯 New ${settings.name} game started! (${settings.clues} clues, ${settings.multiplier}x score)`;
+    setTimeout(() => {
+      document.getElementById('message').textContent = '';
+    }, 2500);
+  }, 100);
+}
+
+// Strict input handling - only allow through number panel
+function handleInput(event, row, col) {
+  const input = event.target;
+  
+  // Completely prevent any direct input in both modes
+  // All input should go through the number panel
+  event.preventDefault();
+  input.value = ''; // Clear any value that might have been entered
+  return false;
 }
 
 // Handle cell selection
@@ -784,14 +996,25 @@ function selectCell(row, col) {
   document.querySelectorAll('.selected').forEach(cell => {
     cell.classList.remove('selected');
   });
+  document.querySelectorAll('.cell-selected-notes').forEach(cell => {
+    cell.classList.remove('cell-selected-notes');
+  });
   
   // Select new cell
   const table = document.getElementById('sudoku');
   const cell = table.rows[row].cells[col].querySelector('input');
+  const td = table.rows[row].cells[col];
   
   // Only select if it's not a fixed cell
   if (!cell.classList.contains('fixed')) {
-    cell.classList.add('selected');
+    if (isNotesMode) {
+      // In notes mode, highlight the entire cell (td element)
+      td.classList.add('cell-selected-notes');
+    } else {
+      // In normal mode, highlight the input element
+      cell.classList.add('selected');
+    }
+    
     selectedCell = { row, col };
   }
 }
@@ -799,10 +1022,11 @@ function selectCell(row, col) {
 // Fill number in selected cell
 function fillNumber(num) {
   if (!selectedCell) {
-    document.getElementById('message').textContent = '⚠️ Please select a cell first!';
+    const modeText = isNotesMode ? 'notes' : 'number';
+    document.getElementById('message').textContent = `⚠️ Please select a cell first, then use number panel to input ${modeText}!`;
     setTimeout(() => {
       document.getElementById('message').textContent = '';
-    }, 2000);
+    }, 3000);
     return;
   }
   
@@ -859,6 +1083,30 @@ function fillNumber(num) {
       cell.value = num;
       cell.classList.remove('incorrect');
       
+      // Check if the answer is correct (auto-check in normal mode)
+      const correctAnswer = solutionBoard[selectedCell.row][selectedCell.col];
+      const isCorrect = parseInt(num) === correctAnswer;
+      
+      if (isCorrect) {
+        // Correct answer - add points
+        updateScore(scoreSettings.correct);
+        cell.style.background = '#dcfce7'; // Light green
+        setTimeout(() => {
+          cell.style.background = '';
+        }, 1000);
+        
+        // Check if puzzle is completed
+        setTimeout(checkPuzzleCompletion, 100);
+      } else {
+        // Wrong answer - deduct points and mark as incorrect
+        updateScore(scoreSettings.incorrect);
+        cell.classList.add('incorrect');
+        cell.style.background = '#fee2e2'; // Light red
+        setTimeout(() => {
+          cell.style.background = '';
+        }, 1000);
+      }
+      
       // Always update cell class when filling regular number
       const td = cell.parentElement;
       
@@ -877,6 +1125,53 @@ function fillNumber(num) {
   document.getElementById('message').textContent = '';
 }
 
+// Check if puzzle is completed
+function checkPuzzleCompletion() {
+  const table = document.getElementById('sudoku');
+  let correctCount = 0;
+  let totalCells = 0;
+  
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const input = table.rows[r].cells[c].querySelector('input');
+      if (!input.classList.contains('fixed')) {
+        totalCells++;
+        if (input.value && parseInt(input.value) === solutionBoard[r][c]) {
+          correctCount++;
+        }
+      }
+    }
+  }
+  
+  if (correctCount === totalCells) {
+    // Puzzle completed!
+    const completionBonus = Math.round(scoreSettings.completion * difficultySettings[currentDifficulty].multiplier);
+    updateScore(scoreSettings.completion);
+    
+    setTimeout(() => {
+      const difficulty = difficultySettings[currentDifficulty].name;
+      document.getElementById('message').innerHTML = `
+        🎉 <strong>Congratulations!</strong><br>
+        ${difficulty} puzzle completed!<br>
+        Final Score: <strong>${currentScore}</strong><br>
+        Completion Bonus: <strong>+${completionBonus}</strong>
+      `;
+      document.getElementById('message').style.cssText = `
+        color: #10b981;
+        font-size: 16px;
+        font-weight: 600;
+        text-align: center;
+        padding: 16px;
+        background: #dcfce7;
+        border-radius: 8px;
+        border: 2px solid #10b981;
+        margin: 16px auto;
+        max-width: 300px;
+      `;
+    }, 500);
+  }
+}
+
 function generateSudoku() {
   const full = generateFullSudoku();
   const clues = difficultySettings[currentDifficulty].clues;
@@ -887,13 +1182,20 @@ function generateSudoku() {
   // Initialize notes board
   initNotesBoard();
   
+  // Reset score
+  resetScore();
+  
   renderBoard(puzzle);
+  
+  // Reset message styles
+  const messageEl = document.getElementById('message');
+  messageEl.style.cssText = '';
   
   // Show generation message
   const difficultyName = difficultySettings[currentDifficulty].name;
-  document.getElementById('message').textContent = `🎮 New ${difficultyName} puzzle generated!`;
+  messageEl.textContent = `🎮 New ${difficultyName} puzzle generated!`;
   setTimeout(() => {
-    document.getElementById('message').textContent = '';
+    messageEl.textContent = '';
   }, 2000);
   
   // Reset selection state
@@ -907,8 +1209,8 @@ function generateSudoku() {
   peekButton.style.background = '';
   
   // Clear any incorrect marks and selections
-  document.querySelectorAll('.incorrect, .selected').forEach(cell => {
-    cell.classList.remove('incorrect', 'selected');
+  document.querySelectorAll('.incorrect, .selected, .cell-selected-notes').forEach(cell => {
+    cell.classList.remove('incorrect', 'selected', 'cell-selected-notes');
   });
 }
 
@@ -1023,8 +1325,65 @@ function revealAnswer() {
   isShowingAnswer = !isShowingAnswer;
 }
 
+// Get hint function - fills one empty cell with correct answer
+function getHint() {
+  const table = document.getElementById('sudoku');
+  const emptyCells = [];
+  
+  // Find all empty cells
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const input = table.rows[r].cells[c].querySelector('input');
+      if (!input.classList.contains('fixed') && !input.value) {
+        emptyCells.push({ row: r, col: c, input: input });
+      }
+    }
+  }
+  
+  if (emptyCells.length === 0) {
+    document.getElementById('message').textContent = '💡 No empty cells to hint!';
+    setTimeout(() => {
+      document.getElementById('message').textContent = '';
+    }, 2000);
+    return;
+  }
+  
+  // Pick a random empty cell
+  const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+  const correctAnswer = solutionBoard[randomCell.row][randomCell.col];
+  
+  // Fill the cell with correct answer
+  randomCell.input.value = correctAnswer;
+  randomCell.input.style.background = '#fef3c7'; // Light yellow for hint
+  randomCell.input.style.color = '#d97706'; // Orange text
+  randomCell.input.classList.add('hint-cell');
+  
+  // Deduct points for using hint
+  const hintPenalty = -15; // Fixed penalty for using hint
+  updateScore(hintPenalty);
+  
+  // Clear any notes for this cell
+  if (notesBoard[randomCell.row][randomCell.col]) {
+    notesBoard[randomCell.row][randomCell.col].clear();
+    const td = randomCell.input.parentElement;
+    td.classList.remove('cell-notes');
+    td.classList.add('cell-regular');
+  }
+  
+  // Show hint message
+  document.getElementById('message').textContent = `💡 Hint used! ${hintPenalty} points`;
+  setTimeout(() => {
+    document.getElementById('message').textContent = '';
+    randomCell.input.style.background = '';
+  }, 2000);
+  
+  // Check if puzzle is completed
+  setTimeout(checkPuzzleCompletion, 100);
+}
+
 // Initialize the game
 initNotesBoard();
+updateDifficultyDisplay();
 generateSudoku();
 </script>
 </body>
