@@ -36,14 +36,182 @@
     font-size: clamp(24px, 5vw, 32px);
   }
   
+  .controls-container {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 16px;
+  }
+
   .controls {
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
     justify-content: center;
-    margin-bottom: 16px;
-    width: 100%;
-    max-width: 400px;
+    margin-bottom: 12px;
+  }
+
+  .game-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border: 2px solid #e5e7eb;
+  }
+
+  .difficulty-dropdown {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+  }
+
+  .difficulty-dropdown label {
+    font-weight: 600;
+    color: #374151;
+    white-space: nowrap;
+  }
+
+  .difficulty-dropdown select {
+    padding: 6px 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    color: #374151;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+
+  .difficulty-dropdown select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+  }
+
+  .score-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .score-label {
+    color: #374151;
+  }
+
+  .score-value {
+    color: #059669;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .multiplier-text {
+    color: #7c3aed;
+    font-size: 14px;
+  }
+
+  .timer-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .timer-section {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  .timer-label {
+    color: #374151;
+  }
+
+  .timer-value {
+    color: #dc2626;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    min-width: 50px;
+  }
+
+  .pause-btn {
+    padding: 6px 8px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    min-width: 36px;
+    height: 36px;
+  }
+
+  .pause-btn:hover {
+    background: #f3f4f6;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .pause-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  .pause-btn.paused {
+    background: #fef3c7;
+    border-color: #f59e0b;
+    color: #f59e0b;
+  }
+
+  .pause-btn.paused:hover {
+    background: #fde68a;
+    border-color: #d97706;
+  }
+
+  /* Hover highlight effects - All green themed */
+  .row-highlight {
+    background: rgba(34, 197, 94, 0.08) !important;
+  }
+
+  .col-highlight {
+    background: rgba(34, 197, 94, 0.1) !important;
+  }
+
+  .box-highlight {
+    background: rgba(34, 197, 94, 0.06) !important;
+  }
+
+  .cell-hover {
+    background: rgba(34, 197, 94, 0.2) !important;
+    box-shadow: inset 0 0 0 2px rgba(34, 197, 94, 0.4) !important;
+  }
+
+  /* Combine highlights for intersections */
+  .row-highlight.col-highlight {
+    background: rgba(34, 197, 94, 0.15) !important;
+  }
+
+  .row-highlight.box-highlight {
+    background: rgba(34, 197, 94, 0.12) !important;
+  }
+
+  .col-highlight.box-highlight {
+    background: rgba(34, 197, 94, 0.14) !important;
+  }
+
+  .row-highlight.col-highlight.box-highlight {
+    background: rgba(34, 197, 94, 0.18) !important;
   }
   
   button { 
@@ -151,35 +319,25 @@
     outline-offset: -3px;
   }
   
-  /* Number panel styles */
+  /* Number panel styles - now single row */
   .number-panel {
-    margin: 20px auto;
-    max-width: 500px;
-    padding: 16px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  
-  .panel-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: #374151;
-    text-align: center;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
   }
   
   .number-buttons {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    max-width: 400px;
-    margin: 0 auto;
+    grid-template-columns: repeat(9, 1fr);
+    gap: 6px;
+    max-width: 100%;
   }
   
   .number-btn {
-    width: 50px;
-    height: 50px;
+    height: 48px;
+    min-width: 48px;
     border: 2px solid #e5e7eb;
     border-radius: 8px;
     background: #f9fafb;
@@ -191,7 +349,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: auto;
+    flex: 1;
     padding: 0;
   }
   
@@ -205,92 +363,102 @@
     transform: translateY(0);
   }
   
+  /* Clear button now positioned with Notes button */
   .clear-btn {
+    padding: 12px 20px;
+    border: 2px solid #fca5a5;
+    border-radius: 12px;
     background: #fee2e2;
-    border-color: #fca5a5;
     color: #dc2626;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 100px;
+    justify-content: center;
   }
   
   .clear-btn:hover {
     background: #fecaca;
     border-color: #f87171;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
   }
   
-  /* Difficulty selector styles */
-  .difficulty-selector {
-    margin: 16px auto;
-    max-width: 600px;
-    padding: 16px;
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  .clear-icon {
+    font-size: 18px;
   }
   
-  .difficulty-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: #374151;
-    text-align: center;
-  }
-  
-  .difficulty-buttons {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-  
-  .difficulty-btn {
-    padding: 16px 12px;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    background: #f9fafb;
-    color: #374151;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    min-width: auto;
+  .clear-text {
     font-size: 14px;
   }
-  
-  .difficulty-btn:hover {
-    background: #f3f4f6;
-    border-color: var(--button-bg);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+  /* Disabled number button styles */
+  .number-btn:disabled {
+    background: #f3f4f6 !important;
+    color: #9ca3af !important;
+    border-color: #e5e7eb !important;
+    cursor: not-allowed !important;
+    opacity: 0.6;
+    transform: none !important;
+    box-shadow: none !important;
+    position: relative;
+  }
+
+  .number-btn:disabled:hover {
+    background: #f3f4f6 !important;
+    color: #9ca3af !important;
+    border-color: #e5e7eb !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  .number-btn:disabled::after {
+    content: '✓';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 10px;
+    color: #22c55e;
+    font-weight: bold;
+  }
+
+  /* Progress indicator for buttons */
+  .number-btn {
+    position: relative;
+  }
+
+  .number-btn:not(:disabled)::before {
+    content: attr(data-count);
+    position: absolute;
+    bottom: 1px;
+    right: 2px;
+    font-size: 8px;
+    color: #6b7280;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 2px;
+    padding: 0 2px;
+    line-height: 1;
   }
   
-  .difficulty-btn.active {
-    background: var(--button-bg);
-    border-color: var(--button-bg);
-    color: white;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-  }
+  /* Old difficulty selector styles - removed in favor of compact dropdown */
   
-  .difficulty-btn.active:hover {
-    background: var(--button-hover);
-    border-color: var(--button-hover);
-  }
-  
-  .level-name {
-    font-weight: 600;
-    font-size: 16px;
-  }
-  
-  .level-desc {
-    font-size: 12px;
-    opacity: 0.8;
-  }
-  
-  /* Notes mode selector styles */
-  .notes-mode-selector {
+  /* Input controls container */
+  .input-controls {
     margin: 16px auto;
-    max-width: 200px;
+    max-width: 600px;
+    width: 100%;
+  }
+
+  /* Control buttons row */
+  .control-buttons {
     display: flex;
     justify-content: center;
+    gap: 16px;
+    margin-bottom: 12px;
   }
   
   .notes-toggle-btn {
@@ -345,50 +513,7 @@
     font-weight: 500;
   }
   
-  /* Score board styles */
-  .score-board {
-    margin: 16px auto;
-    max-width: 400px;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border: 2px solid #e5e7eb;
-  }
-  
-  .score-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-  
-  .score-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: #6b7280;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .score-value {
-    font-size: 24px;
-    font-weight: 700;
-    color: #1f2937;
-    font-family: 'Courier New', monospace;
-  }
-  
-  .difficulty-multiplier {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--button-bg);
-    padding: 4px 8px;
-    background: rgba(59, 130, 246, 0.1);
-    border-radius: 6px;
-  }
+  /* Old score board styles - merged into game-info */
   
   /* Notes grid styles */
   .notes-grid {
@@ -432,9 +557,9 @@
   /* Make regular input transparent but clickable when notes mode is active AND cell has notes */
   body.notes-mode-active .cell-notes .regular-input {
     opacity: 0;
-    background: rgba(255, 0, 0, 0.1) !important; /* Temporary debug: semi-transparent red */
+    background: transparent !important;
     color: transparent !important;
-    border: 2px solid red !important; /* Temporary debug: red border */
+    border: none !important;
     pointer-events: auto !important;
     position: absolute;
     top: 0;
@@ -531,39 +656,70 @@
       font-size: 14px;
     }
     
-    .difficulty-selector {
-      margin: 12px auto;
+    .controls-container {
+      max-width: 100%;
+    }
+    
+    .game-info {
+      flex-direction: column;
+      gap: 12px;
       padding: 12px;
     }
     
-    .difficulty-buttons {
-      grid-template-columns: 1fr;
-      gap: 8px;
+    .difficulty-dropdown {
+      justify-content: center;
     }
     
-    .difficulty-btn {
-      padding: 12px;
-      flex-direction: row;
-      justify-content: space-between;
+    .difficulty-dropdown select {
+      font-size: 13px;
+      padding: 5px 10px;
     }
     
-    .difficulty-title {
+    .timer-display {
+      justify-content: center;
+    }
+    
+    .timer-section {
       font-size: 14px;
     }
     
-    .notes-mode-selector {
-      margin: 12px auto;
-      max-width: 180px;
+    .timer-value {
+      font-size: 16px;
     }
     
-    .notes-toggle-btn {
+    .pause-btn {
+      height: 32px;
+      min-width: 32px;
+      font-size: 14px;
+    }
+    
+    .score-display {
+      justify-content: center;
+      font-size: 14px;
+    }
+    
+    .score-value {
+      font-size: 16px;
+    }
+    
+    .input-controls {
+      margin: 12px auto;
+    }
+    
+    .control-buttons {
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    
+    .notes-toggle-btn, .clear-btn {
       padding: 10px 16px;
       font-size: 13px;
       gap: 6px;
       min-width: 100px;
     }
     
-    .mode-icon {
+    .mode-icon, .clear-icon {
       font-size: 14px;
     }
     
@@ -571,18 +727,18 @@
       font-size: 8px;
     }
     
-    .score-board {
-      margin: 12px auto;
-      padding: 10px 16px;
-      max-width: 350px;
+    .number-panel {
+      padding: 8px;
     }
     
-    .score-value {
-      font-size: 20px;
+    .number-buttons {
+      gap: 4px;
     }
     
-    .difficulty-multiplier {
-      font-size: 14px;
+    .number-btn {
+      height: 40px;
+      min-width: 40px;
+      font-size: 16px;
     }
   }
   
@@ -595,64 +751,73 @@
 </head>
 <body>
 <h1>9×9 Sudoku Game</h1>
-<div class="controls">
-  <button onclick="generateSudoku()">New Game</button>
-  <button onclick="getHint()">💡 Hint</button>
-  <button onclick="checkSudoku()">Check Answer</button>
-  <button onclick="revealAnswer()">Peek Answer</button>
-</div>
-
-<div class="difficulty-selector">
-  <div class="difficulty-title">Difficulty Level:</div>
-  <div class="difficulty-buttons">
-    <button class="difficulty-btn active" onclick="setDifficulty('easy')" data-level="easy">
-      <span class="level-name">Beginner</span>
-      <span class="level-desc">50 clues</span>
-    </button>
-    <button class="difficulty-btn" onclick="setDifficulty('medium')" data-level="medium">
-      <span class="level-name">Casual</span>
-      <span class="level-desc">40 clues</span>
-    </button>
-    <button class="difficulty-btn" onclick="setDifficulty('hard')" data-level="hard">
-      <span class="level-name">Challenge</span>
-      <span class="level-desc">32 clues</span>
-    </button>
+<div class="controls-container">
+  <!-- Top row: Game controls -->
+  <div class="controls">
+    <button onclick="generateSudoku()">New Game</button>
+    <button onclick="getHint()">💡 Hint</button>
+    <button onclick="checkSudoku()">Check Answer</button>
+    <button onclick="revealAnswer()">Peek Answer</button>
   </div>
-</div>
-<div class="score-board">
-  <div class="score-item">
-    <span class="score-label">Score:</span>
-    <span class="score-value" id="current-score">1500</span>
-  </div>
-  <div class="score-item">
-    <span class="score-label">Difficulty:</span>
-    <span class="difficulty-multiplier" id="difficulty-multiplier">1.0x</span>
+  
+  <!-- Bottom row: Difficulty, Timer, Score -->
+  <div class="game-info">
+    <div class="difficulty-dropdown">
+      <label for="difficulty-select">Difficulty:</label>
+      <select id="difficulty-select" onchange="setDifficulty(this.value)">
+        <option value="easy" selected>Beginner (50 clues)</option>
+        <option value="medium">Casual (40 clues)</option>
+        <option value="hard">Challenge (32 clues)</option>
+      </select>
+    </div>
+    
+    <div class="timer-display">
+      <div class="timer-section">
+        <span class="timer-label">Time:</span>
+        <span class="timer-value" id="game-timer">00:00</span>
+      </div>
+      <button class="pause-btn" onclick="toggleTimer()" id="pause-button">
+        <span class="pause-icon" id="pause-icon">⏸️</span>
+      </button>
+    </div>
+    
+    <div class="score-display">
+      <span class="score-label">Score:</span>
+      <span class="score-value" id="current-score">1500</span>
+      <span class="multiplier-text">×<span id="difficulty-multiplier">1.0</span></span>
+    </div>
   </div>
 </div>
 
 <table id="sudoku"></table>
 <p id="message"></p>
 
-<div class="notes-mode-selector">
-  <button class="notes-toggle-btn" onclick="toggleNotesMode()" id="notes-toggle">
-    <span class="mode-icon">📝</span>
-    <span class="mode-name">Notes</span>
-  </button>
-</div>
-
-<div class="number-panel">
-  <div class="panel-title">Select Number:</div>
-  <div class="number-buttons">
-    <button class="number-btn" onclick="fillNumber(1)">1</button>
-    <button class="number-btn" onclick="fillNumber(2)">2</button>
-    <button class="number-btn" onclick="fillNumber(3)">3</button>
-    <button class="number-btn" onclick="fillNumber(4)">4</button>
-    <button class="number-btn" onclick="fillNumber(5)">5</button>
-    <button class="number-btn" onclick="fillNumber(6)">6</button>
-    <button class="number-btn" onclick="fillNumber(7)">7</button>
-    <button class="number-btn" onclick="fillNumber(8)">8</button>
-    <button class="number-btn" onclick="fillNumber(9)">9</button>
-    <button class="number-btn clear-btn" onclick="fillNumber(0)">✕</button>
+<div class="input-controls">
+  <!-- Control buttons row -->
+  <div class="control-buttons">
+    <button class="notes-toggle-btn" onclick="toggleNotesMode()" id="notes-toggle">
+      <span class="mode-icon">📝</span>
+      <span class="mode-name">Notes</span>
+    </button>
+    <button class="clear-btn" onclick="fillNumber(0)">
+      <span class="clear-icon">🧽</span>
+      <span class="clear-text">Clear</span>
+    </button>
+  </div>
+  
+  <!-- Number selection row -->
+  <div class="number-panel">
+    <div class="number-buttons">
+      <button class="number-btn" onclick="fillNumber(1)">1</button>
+      <button class="number-btn" onclick="fillNumber(2)">2</button>
+      <button class="number-btn" onclick="fillNumber(3)">3</button>
+      <button class="number-btn" onclick="fillNumber(4)">4</button>
+      <button class="number-btn" onclick="fillNumber(5)">5</button>
+      <button class="number-btn" onclick="fillNumber(6)">6</button>
+      <button class="number-btn" onclick="fillNumber(7)">7</button>
+      <button class="number-btn" onclick="fillNumber(8)">8</button>
+      <button class="number-btn" onclick="fillNumber(9)">9</button>
+    </div>
   </div>
 </div>
 
@@ -722,6 +887,12 @@ let currentDifficulty = 'easy'; // Current difficulty level
 let isNotesMode = false; // Notes mode state
 let notesBoard = null; // Store notes for each cell
 let currentScore = 1500; // Starting score (increased for more margin)
+
+// Timer variables
+let gameStartTime = null;
+let gameElapsedTime = 0; // Total elapsed time in seconds
+let timerInterval = null;
+let isTimerPaused = false;
 
 // Difficulty settings with scoring multipliers
 const difficultySettings = {
@@ -800,6 +971,194 @@ function updateDifficultyDisplay() {
   document.getElementById('difficulty-multiplier').textContent = `${multiplier}x`;
 }
 
+// Timer functions
+function formatTime(seconds) {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+}
+
+function updateTimerDisplay() {
+  document.getElementById('game-timer').textContent = formatTime(gameElapsedTime);
+}
+
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  
+  gameStartTime = Date.now() - (gameElapsedTime * 1000);
+  isTimerPaused = false;
+  
+  timerInterval = setInterval(() => {
+    if (!isTimerPaused) {
+      gameElapsedTime = Math.floor((Date.now() - gameStartTime) / 1000);
+      updateTimerDisplay();
+    }
+  }, 1000);
+  
+  updatePauseButton();
+}
+
+function pauseTimer() {
+  isTimerPaused = true;
+  updatePauseButton();
+}
+
+function resumeTimer() {
+  isTimerPaused = false;
+  gameStartTime = Date.now() - (gameElapsedTime * 1000);
+  updatePauseButton();
+}
+
+function resetTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+  gameElapsedTime = 0;
+  gameStartTime = null;
+  isTimerPaused = false;
+  updateTimerDisplay();
+  updatePauseButton();
+}
+
+function toggleTimer() {
+  if (isTimerPaused) {
+    resumeTimer();
+  } else {
+    pauseTimer();
+  }
+}
+
+function updatePauseButton() {
+  const pauseBtn = document.getElementById('pause-button');
+  const pauseIcon = document.getElementById('pause-icon');
+  
+  if (isTimerPaused) {
+    pauseBtn.classList.add('paused');
+    pauseIcon.textContent = '▶️';
+    pauseBtn.title = 'Resume timer';
+  } else {
+    pauseBtn.classList.remove('paused');
+    pauseIcon.textContent = '⏸️';
+    pauseBtn.title = 'Pause timer';
+  }
+}
+
+// Cell hover highlight functions
+function highlightRelatedCells(row, col) {
+  const table = document.getElementById('sudoku');
+  clearAllHighlights();
+  
+  // Calculate 3x3 box boundaries
+  const boxStartRow = Math.floor(row / 3) * 3;
+  const boxStartCol = Math.floor(col / 3) * 3;
+  
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const cell = table.rows[r].cells[c];
+      
+      // Current cell gets special hover style
+      if (r === row && c === col) {
+        cell.classList.add('cell-hover');
+        continue;
+      }
+      
+      // Same row
+      if (r === row) {
+        cell.classList.add('row-highlight');
+      }
+      
+      // Same column
+      if (c === col) {
+        cell.classList.add('col-highlight');
+      }
+      
+      // Same 3x3 box
+      if (r >= boxStartRow && r < boxStartRow + 3 && 
+          c >= boxStartCol && c < boxStartCol + 3) {
+        cell.classList.add('box-highlight');
+      }
+    }
+  }
+}
+
+function clearAllHighlights() {
+  const table = document.getElementById('sudoku');
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const cell = table.rows[r].cells[c];
+      cell.classList.remove('row-highlight', 'col-highlight', 'box-highlight', 'cell-hover');
+    }
+  }
+}
+
+function addCellHoverEvents(cell, row, col) {
+  cell.addEventListener('mouseenter', () => {
+    highlightRelatedCells(row, col);
+  });
+  
+  cell.addEventListener('mouseleave', () => {
+    clearAllHighlights();
+  });
+}
+
+// Check if a number is complete (appears 9 times) and update button states
+function updateNumberButtonStates() {
+  const table = document.getElementById('sudoku');
+  const numberCounts = {};
+  
+  // Initialize counts
+  for (let num = 1; num <= 9; num++) {
+    numberCounts[num] = 0;
+  }
+  
+  // Count all numbers on the board
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const input = table.rows[r].cells[c].querySelector('input');
+      if (input && input.value) {
+        const num = parseInt(input.value);
+        if (num >= 1 && num <= 9) {
+          numberCounts[num]++;
+        }
+      }
+    }
+  }
+  
+  // Update button states
+  for (let num = 1; num <= 9; num++) {
+    const button = document.querySelector(`button[onclick="fillNumber(${num})"]`);
+    if (button) {
+      const count = numberCounts[num];
+      
+      // Set data attribute for CSS counter display
+      button.setAttribute('data-count', `${count}/9`);
+      
+      if (count >= 9) {
+        button.disabled = true;
+        button.title = `Number ${num} is complete (9/9)`;
+      } else {
+        button.disabled = false;
+        button.title = `Fill number ${num} (${count}/9)`;
+      }
+    }
+  }
+}
+
+function getNumberCount(num) {
+  const table = document.getElementById('sudoku');
+  let count = 0;
+  
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const input = table.rows[r].cells[c].querySelector('input');
+      if (input && input.value && parseInt(input.value) === num) {
+        count++;
+      }
+    }
+  }
+  
+  return count;
+}
+
 function renderBoard(puzzle) {
   const table = document.getElementById('sudoku');
   table.innerHTML = '';
@@ -834,10 +1193,17 @@ function renderBoard(puzzle) {
           </div>
         `;
       }
+      
+      // Add hover events for cell highlighting
+      addCellHoverEvents(td, r, c);
+      
       tr.appendChild(td);
     }
     table.appendChild(tr);
   }
+  
+  // Update number button states after rendering
+  updateNumberButtonStates();
 }
 
 // Render 3x3 notes grid for a cell (display only, no click events)
@@ -951,17 +1317,17 @@ function renderSingleCell(row, col) {
       </div>
     `;
   }
+  
+  // Re-add hover events after re-rendering
+  addCellHoverEvents(td, row, col);
 }
 
 // Set difficulty level
 function setDifficulty(level) {
   currentDifficulty = level;
   
-  // Update button styles
-  document.querySelectorAll('.difficulty-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  document.querySelector(`[data-level="${level}"]`).classList.add('active');
+  // Update select dropdown to reflect the current selection
+  document.getElementById('difficulty-select').value = level;
   
   // Update difficulty multiplier display
   updateDifficultyDisplay();
@@ -1027,6 +1393,15 @@ function fillNumber(num) {
     setTimeout(() => {
       document.getElementById('message').textContent = '';
     }, 3000);
+    return;
+  }
+  
+  // Check if number is complete (except for clearing with 0)
+  if (num !== 0 && getNumberCount(num) >= 9) {
+    document.getElementById('message').textContent = `⚠️ Number ${num} is already complete (9/9)!`;
+    setTimeout(() => {
+      document.getElementById('message').textContent = '';
+    }, 2000);
     return;
   }
   
@@ -1123,6 +1498,9 @@ function fillNumber(num) {
   
   // Clear message
   document.getElementById('message').textContent = '';
+  
+  // Update number button states after any change
+  updateNumberButtonStates();
 }
 
 // Check if puzzle is completed
@@ -1145,14 +1523,18 @@ function checkPuzzleCompletion() {
   
   if (correctCount === totalCells) {
     // Puzzle completed!
+    pauseTimer(); // Stop the timer when puzzle is completed
+    
     const completionBonus = Math.round(scoreSettings.completion * difficultySettings[currentDifficulty].multiplier);
     updateScore(scoreSettings.completion);
     
     setTimeout(() => {
       const difficulty = difficultySettings[currentDifficulty].name;
+      const completionTime = formatTime(gameElapsedTime);
       document.getElementById('message').innerHTML = `
         🎉 <strong>Congratulations!</strong><br>
         ${difficulty} puzzle completed!<br>
+        Time: <strong>${completionTime}</strong><br>
         Final Score: <strong>${currentScore}</strong><br>
         Completion Bonus: <strong>+${completionBonus}</strong>
       `;
@@ -1184,6 +1566,10 @@ function generateSudoku() {
   
   // Reset score
   resetScore();
+  
+  // Reset and start timer
+  resetTimer();
+  startTimer();
   
   renderBoard(puzzle);
   
@@ -1377,6 +1763,9 @@ function getHint() {
     randomCell.input.style.background = '';
   }, 2000);
   
+  // Update number button states after hint
+  updateNumberButtonStates();
+  
   // Check if puzzle is completed
   setTimeout(checkPuzzleCompletion, 100);
 }
@@ -1384,6 +1773,8 @@ function getHint() {
 // Initialize the game
 initNotesBoard();
 updateDifficultyDisplay();
+updateTimerDisplay();
+updatePauseButton();
 generateSudoku();
 </script>
 </body>
