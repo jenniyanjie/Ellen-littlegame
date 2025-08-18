@@ -92,6 +92,156 @@
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
   }
 
+  .new-game-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .new-game-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+  }
+
+  .new-game-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+  }
+
+  /* Difficulty Modal Styles */
+  .difficulty-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    display: none; /* Hidden by default */
+  }
+
+  .difficulty-modal:not(.hidden) {
+    display: flex !important; /* Show when not hidden */
+  }
+
+  .difficulty-modal.hidden {
+    display: none !important; /* Force hidden */
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: modalAppear 0.3s ease;
+  }
+
+  @keyframes modalAppear {
+    from {
+      opacity: 0;
+      transform: scale(0.9) translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .difficulty-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .difficulty-option {
+    padding: 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+    text-align: left;
+  }
+
+  .difficulty-option:hover {
+    border-color: #3b82f6;
+    background: #f8fafc;
+  }
+
+  .difficulty-option.selected {
+    border-color: #3b82f6;
+    background: #eff6ff;
+  }
+
+  .difficulty-name {
+    font-weight: 600;
+    font-size: 16px;
+    color: #1f2937;
+    margin-bottom: 4px;
+  }
+
+  .difficulty-desc {
+    font-size: 14px;
+    color: #6b7280;
+  }
+
+  .modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .modal-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .modal-btn.cancel {
+    background: #f3f4f6;
+    color: #374151;
+  }
+
+  .modal-btn.cancel:hover {
+    background: #e5e7eb;
+  }
+
+  .modal-btn.confirm {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: white;
+  }
+
+  .modal-btn.confirm:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  }
+
   .score-display {
     display: flex;
     align-items: center;
@@ -477,7 +627,7 @@
   
   /* Input controls container */
   .input-controls {
-    margin: 16px auto;
+    margin: 8px auto;
     max-width: 600px;
     width: 100%;
   }
@@ -487,7 +637,7 @@
     display: flex;
     justify-content: center;
     gap: 16px;
-    margin-bottom: 12px;
+    margin-bottom: 6px;
   }
   
   .notes-toggle-btn {
@@ -560,10 +710,9 @@
     z-index: 10;
   }
   
-  /* In notes mode, notes grid displays below transparent input and doesn't receive clicks */
+  /* In notes mode, notes grid displays below transparent input */
   body.notes-mode-active .cell-notes .notes-grid {
     z-index: 10; /* Below transparent input (z-index: 25) */
-    pointer-events: none !important; /* Completely disable all mouse events */
   }
   
   .notes-cell {
@@ -641,9 +790,9 @@
   }
   
   #message {
-    margin: 16px 0;
-    min-height: 24px;
-    font-size: 16px;
+    margin: 8px 0;
+    min-height: 20px;
+    font-size: 15px;
   }
   
   @media (max-width: 480px) {
@@ -666,8 +815,8 @@
     }
     
     .number-panel {
-      margin: 16px auto;
-      padding: 12px;
+      margin: 8px auto;
+      padding: 10px;
     }
     
     .number-buttons {
@@ -691,17 +840,28 @@
     
     .game-info {
       flex-direction: column;
-      gap: 12px;
-      padding: 12px;
+      gap: 8px;
+      padding: 10px;
+    }
+    
+    /* Create a row for timer and score */
+    .timer-score-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
     }
     
     .difficulty-dropdown {
       justify-content: center;
+      width: 100%;
     }
     
-    .difficulty-dropdown select {
-      font-size: 13px;
-      padding: 5px 10px;
+    .new-game-btn {
+      font-size: 14px;
+      padding: 8px 16px;
+      width: 100%;
+      max-width: 200px;
     }
     
     .timer-display {
@@ -732,20 +892,64 @@
     }
     
     .input-controls {
-      margin: 12px auto;
+      margin: 6px auto;
     }
     
     .control-buttons {
-      flex-direction: column;
-      gap: 8px;
-      margin-bottom: 8px;
+      flex-direction: row;
+      gap: 12px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     
     .notes-toggle-btn, .clear-btn {
-      padding: 10px 16px;
+      padding: 8px 12px;
       font-size: 13px;
       gap: 6px;
-      min-width: 100px;
+      min-width: 90px;
+      flex: 0 0 auto;
+    }
+    
+    /* Ultra-small screens: reduce button size further */
+    @media (max-width: 360px) {
+      .notes-toggle-btn, .clear-btn {
+        padding: 6px 10px;
+        font-size: 12px;
+        min-width: 80px;
+        gap: 4px;
+      }
+      
+      .control-buttons {
+        gap: 8px;
+      }
+      
+      .new-game-btn {
+        font-size: 13px;
+        padding: 6px 12px;
+      }
+      
+      .modal-content {
+        padding: 16px;
+        max-width: 320px;
+      }
+      
+      .modal-title {
+        font-size: 18px;
+        margin-bottom: 12px;
+      }
+      
+      .difficulty-option {
+        padding: 12px;
+      }
+      
+      .difficulty-name {
+        font-size: 15px;
+      }
+      
+      .difficulty-desc {
+        font-size: 13px;
+      }
     }
     
     .mode-icon, .clear-icon {
@@ -783,43 +987,66 @@
 <div class="controls-container">
   <!-- Top row: Game controls -->
   <div class="controls">
-    <button onclick="generateSudoku()">New Game</button>
+    <button onclick="revealAnswer()">Peek Answer</button>
     <button onclick="getHint()">💡 Hint</button>
     <button onclick="checkSudoku()">Check Answer</button>
-    <button onclick="revealAnswer()">Peek Answer</button>
   </div>
   
-  <!-- Bottom row: Difficulty, Timer, Score -->
+  <!-- Bottom row: New Game with Difficulty, Timer, Score -->
   <div class="game-info">
     <div class="difficulty-dropdown">
-      <label for="difficulty-select">Difficulty:</label>
-      <select id="difficulty-select" onchange="setDifficulty(this.value)">
-        <option value="easy" selected>Beginner (50 clues)</option>
-        <option value="medium">Casual (40 clues)</option>
-        <option value="hard">Challenge (32 clues)</option>
-      </select>
-    </div>
-    
-    <div class="timer-display">
-      <div class="timer-section">
-        <span class="timer-label">Time:</span>
-        <span class="timer-value" id="game-timer">00:00</span>
-      </div>
-      <button class="pause-btn" onclick="toggleTimer()" id="pause-button">
-        <span class="pause-icon" id="pause-icon">⏸️</span>
+      <button class="new-game-btn" onclick="showDifficultyModal()" id="new-game-btn">
+        🎮 New Game
       </button>
     </div>
     
-    <div class="score-display">
-      <span class="score-label">Score:</span>
-      <span class="score-value" id="current-score">1500</span>
-      <span class="multiplier-text">×<span id="difficulty-multiplier">1.0</span></span>
+    <div class="timer-score-row">
+      <div class="timer-display">
+        <div class="timer-section">
+          <span class="timer-label">Time:</span>
+          <span class="timer-value" id="game-timer">00:00</span>
+        </div>
+        <button class="pause-btn" onclick="toggleTimer()" id="pause-button">
+          <span class="pause-icon" id="pause-icon">⏸️</span>
+        </button>
+      </div>
+      
+      <div class="score-display">
+        <span class="score-label">Score:</span>
+        <span class="score-value" id="current-score">1500</span>
+        <span class="multiplier-text">×<span id="difficulty-multiplier">1.0</span></span>
+      </div>
     </div>
   </div>
 </div>
 
 <table id="sudoku"></table>
 <p id="message"></p>
+
+<!-- Difficulty Selection Modal -->
+<div id="difficulty-modal" class="difficulty-modal hidden">
+  <div class="modal-content">
+    <h2 class="modal-title">Choose Difficulty Level</h2>
+    <div class="difficulty-options">
+      <div class="difficulty-option" data-difficulty="easy">
+        <div class="difficulty-name">🔵 Beginner</div>
+        <div class="difficulty-desc">50 clues - Perfect for learning</div>
+      </div>
+      <div class="difficulty-option" data-difficulty="medium">
+        <div class="difficulty-name">🟡 Casual</div>
+        <div class="difficulty-desc">40 clues - Balanced challenge</div>
+      </div>
+      <div class="difficulty-option" data-difficulty="hard">
+        <div class="difficulty-name">🔴 Challenge</div>
+        <div class="difficulty-desc">32 clues - For experts only</div>
+      </div>
+    </div>
+    <div class="modal-buttons">
+      <button class="modal-btn cancel" onclick="hideDifficultyModal()">Cancel</button>
+      <button class="modal-btn confirm" onclick="confirmNewGame()" id="confirm-new-game">Start Game</button>
+    </div>
+  </div>
+</div>
 
 <div class="input-controls">
   <!-- Control buttons row -->
@@ -997,7 +1224,13 @@ function resetScore() {
 
 function updateDifficultyDisplay() {
   const multiplier = difficultySettings[currentDifficulty].multiplier;
-  document.getElementById('difficulty-multiplier').textContent = `${multiplier}x`;
+  const element = document.getElementById('difficulty-multiplier');
+  if (element) {
+    element.textContent = `${multiplier}x`;
+    console.log('Difficulty multiplier updated to:', `${multiplier}x`);
+  } else {
+    console.error('Difficulty multiplier element not found');
+  }
 }
 
 // Timer functions
@@ -1371,25 +1604,35 @@ function renderSingleCell(row, col) {
 
 // Set difficulty level
 function setDifficulty(level) {
-  currentDifficulty = level;
+  console.log('🎯 Setting difficulty to:', level);
   
-  // Update select dropdown to reflect the current selection
-  document.getElementById('difficulty-select').value = level;
-  
-  // Update difficulty multiplier display
-  updateDifficultyDisplay();
-  
-  // Generate new game with the selected difficulty
-  generateSudoku();
-  
-  // Show feedback message (will override the generation message briefly)
-  const settings = difficultySettings[level];
-  setTimeout(() => {
-    document.getElementById('message').textContent = `🎯 New ${settings.name} game started! (${settings.clues} clues, ${settings.multiplier}x score)`;
+  try {
+    // Update current difficulty
+    currentDifficulty = level;
+    
+    // Update difficulty multiplier display
+    updateDifficultyDisplay();
+    
+    // Generate new game with the selected difficulty
+    generateSudoku();
+    
+    // Show feedback message
+    const settings = difficultySettings[level];
     setTimeout(() => {
-      document.getElementById('message').textContent = '';
-    }, 2500);
-  }, 100);
+      const messageElement = document.getElementById('message');
+      if (messageElement) {
+        messageElement.textContent = `🎯 New ${settings.name} game started! (${settings.clues} clues, ${settings.multiplier}x score)`;
+        setTimeout(() => {
+          messageElement.textContent = '';
+        }, 2500);
+      }
+    }, 200);
+    
+    console.log('✅ Difficulty successfully changed to:', level);
+    
+  } catch (error) {
+    console.error('❌ Error in setDifficulty:', error);
+  }
 }
 
 // Strict input handling - only allow through number panel
@@ -1405,9 +1648,6 @@ function handleInput(event, row, col) {
 
 // Handle cell selection
 function selectCell(row, col) {
-  // Debug log for mobile testing
-  console.log('selectCell called:', row, col);
-  
   // Clear previous selection
   document.querySelectorAll('.selected').forEach(cell => {
     cell.classList.remove('selected');
@@ -1432,9 +1672,6 @@ function selectCell(row, col) {
     }
     
     selectedCell = { row, col };
-    console.log('Cell selected:', selectedCell);
-  } else {
-    console.log('Fixed cell, not selectable');
   }
 }
 
@@ -1854,12 +2091,187 @@ function preventMobileKeyboard() {
   }, false);
 }
 
+// Difficulty Modal Functions
+let selectedModalDifficulty = 'easy';
+
+function showDifficultyModal() {
+  try {
+    const modal = document.getElementById('difficulty-modal');
+    if (!modal) return;
+    
+    // Remove hidden class and clear any inline styles
+    modal.classList.remove('hidden');
+    modal.style.display = '';
+    
+    // Set current difficulty as selected
+    selectedModalDifficulty = currentDifficulty;
+    updateModalSelection();
+    
+    // Remove existing event listeners first to prevent duplicates
+    document.querySelectorAll('.difficulty-option').forEach(option => {
+      option.replaceWith(option.cloneNode(true));
+    });
+    
+    // Add click handlers for difficulty options
+    document.querySelectorAll('.difficulty-option').forEach(option => {
+      option.addEventListener('click', function() {
+        selectedModalDifficulty = this.getAttribute('data-difficulty');
+        console.log('Difficulty option clicked:', selectedModalDifficulty);
+        updateModalSelection();
+      });
+    });
+    
+    // Handle background click to close modal
+    const handleBackgroundClick = function(e) {
+      if (e.target === modal) {
+        hideDifficultyModal();
+        modal.removeEventListener('click', handleBackgroundClick);
+      }
+    };
+    
+    modal.addEventListener('click', handleBackgroundClick);
+    
+  } catch (error) {
+    console.error('Error showing modal:', error);
+  }
+}
+
+function hideDifficultyModal() {
+  try {
+    const modal = document.getElementById('difficulty-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.style.display = 'none';
+      modal.style.animation = 'none';
+    }
+  } catch (error) {
+    console.error('Error hiding modal:', error);
+  }
+}
+
+function updateModalSelection() {
+  document.querySelectorAll('.difficulty-option').forEach(option => {
+    if (option.getAttribute('data-difficulty') === selectedModalDifficulty) {
+      option.classList.add('selected');
+    } else {
+      option.classList.remove('selected');
+    }
+  });
+}
+
+function confirmNewGame() {
+  console.log('=== NEW GAME STARTED ===');
+  console.log('Selected difficulty:', selectedModalDifficulty);
+  
+  try {
+    // Hide modal first
+    hideDifficultyModal();
+    
+    // Small delay to ensure modal is hidden before starting game
+    setTimeout(() => {
+      // Set the selected difficulty and start new game
+      setDifficulty(selectedModalDifficulty);
+      console.log('=== NEW GAME COMPLETED ===');
+    }, 50);
+    
+  } catch (error) {
+    console.error('Error in confirmNewGame:', error);
+    // Still try to hide modal
+    hideDifficultyModal();
+  }
+}
+
+function getDifficultyName(difficulty) {
+  const names = {
+    'easy': 'Beginner',
+    'medium': 'Casual', 
+    'hard': 'Challenge'
+  };
+  return names[difficulty] || 'Beginner';
+}
+
+// Debug function to test modal functionality
+function testModal() {
+  console.log('Testing modal functionality...');
+  const modal = document.getElementById('difficulty-modal');
+  console.log('Modal element:', modal);
+  console.log('Modal classes:', modal ? modal.className : 'Not found');
+  console.log('Modal display style:', modal ? modal.style.display : 'Not found');
+}
+
+// Test function to manually set difficulty
+function testSetDifficulty(level) {
+  console.log('=== TESTING setDifficulty ===');
+  console.log('Before - currentDifficulty:', currentDifficulty);
+  setDifficulty(level);
+  console.log('After - currentDifficulty:', currentDifficulty);
+  console.log('=== END TEST ===');
+}
+
+// Complete test function for new game flow
+function testNewGameFlow(difficulty = 'medium') {
+  console.log('=== TESTING COMPLETE NEW GAME FLOW ===');
+  console.log('1. Current difficulty before:', currentDifficulty);
+  
+  // Simulate user selecting difficulty
+  selectedModalDifficulty = difficulty;
+  console.log('2. Selected modal difficulty:', selectedModalDifficulty);
+  
+  // Call confirmNewGame (which calls setDifficulty)
+  confirmNewGame();
+  
+  // Check results after a delay
+  setTimeout(() => {
+    console.log('3. Final current difficulty:', currentDifficulty);
+    console.log('4. Difficulty settings:', difficultySettings[currentDifficulty]);
+    console.log('5. Score multiplier element:', document.getElementById('difficulty-multiplier')?.textContent);
+    console.log('=== END COMPLETE TEST ===');
+  }, 200);
+}
+
 // Initialize the game
 initNotesBoard();
 updateDifficultyDisplay();
 updateTimerDisplay();
 updatePauseButton();
 generateSudoku();
+
+// Ensure modal is properly hidden on page load
+document.addEventListener('DOMContentLoaded', function() {
+  const modal = document.getElementById('difficulty-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.style.display = 'none';
+  }
+});
+
+// Also run immediately in case DOM is already loaded
+const modal = document.getElementById('difficulty-modal');
+if (modal) {
+  modal.classList.add('hidden');
+  modal.style.display = 'none';
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+  // N key for New Game (with difficulty selection)
+  if (e.key.toLowerCase() === 'n' && !e.ctrlKey && !e.altKey && !e.metaKey) {
+    // Only if no input is focused and modal is not open
+    if (document.activeElement.tagName !== 'INPUT' && 
+        document.getElementById('difficulty-modal').classList.contains('hidden')) {
+      showDifficultyModal();
+      e.preventDefault();
+    }
+  }
+  
+  // Escape key to close modal
+  if (e.key === 'Escape') {
+    if (!document.getElementById('difficulty-modal').classList.contains('hidden')) {
+      hideDifficultyModal();
+      e.preventDefault();
+    }
+  }
+});
 
 // Apply mobile protections after DOM is ready
 if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
