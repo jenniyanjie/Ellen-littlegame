@@ -267,11 +267,34 @@
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    /* Additional mobile keyboard prevention */
+    -webkit-touch-callout: none;
+    -webkit-user-modify: read-only;
+  }
+
+  /* Prevent focus on mobile devices */
+  input:focus {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Additional mobile-specific styles */
+  @media (max-width: 768px) {
+    input {
+      pointer-events: none;
+    }
+    
+    td {
+      pointer-events: auto;
+    }
   }
   
-  input:focus {
-    outline: 2px solid var(--button-bg);
-    outline-offset: -2px;
+  /* Normal focus styles for desktop */
+  @media (min-width: 769px) {
+    input:focus {
+      outline: 2px solid var(--button-bg);
+      outline-offset: -2px;
+    }
   }
   
   .fixed { 
@@ -1173,7 +1196,9 @@ function renderBoard(puzzle) {
 
       if (puzzle[r][c] !== 0) {
         // Fixed cell - only show the number
-        td.innerHTML = `<input type="text" value="${puzzle[r][c]}" readonly class="fixed regular-input">`;
+        td.innerHTML = `<input type="text" value="${puzzle[r][c]}" readonly class="fixed regular-input" 
+                               inputmode="none" autocomplete="off" tabindex="-1" 
+                               onfocus="this.blur();" ontouchstart="event.preventDefault();">`;
       } else {
         // Empty cell - support both regular input and notes
         const hasNotes = notesBoard && notesBoard[r][c] && notesBoard[r][c].size > 0;
@@ -1182,12 +1207,18 @@ function renderBoard(puzzle) {
         td.classList.add(cellClass);
         td.innerHTML = `
           <input type="text" onclick="selectCell(${r}, ${c})" class="regular-input" maxlength="1" 
+                 readonly="readonly"
+                 inputmode="none"
+                 autocomplete="off"
+                 tabindex="-1"
                  onkeydown="return false;" 
                  onkeypress="return false;" 
                  onkeyup="return false;"
                  oninput="handleInput(event, ${r}, ${c})"
                  onpaste="return false;"
-                 ondrop="return false;">
+                 ondrop="return false;"
+                 onfocus="this.blur();"
+                 ontouchstart="event.preventDefault(); selectCell(${r}, ${c});">
           <div class="notes-grid">
             ${renderNotesGrid(r, c)}
           </div>
@@ -1285,7 +1316,9 @@ function renderSingleCell(row, col) {
     td.className = '';
     if (thickRight) td.classList.add('thick-right');
     if (thickBottom) td.classList.add('thick-bottom');
-    td.innerHTML = `<input type="text" value="${puzzle[row][col]}" readonly class="fixed regular-input">`;
+    td.innerHTML = `<input type="text" value="${puzzle[row][col]}" readonly class="fixed regular-input" 
+                           inputmode="none" autocomplete="off" tabindex="-1" 
+                           onfocus="this.blur();" ontouchstart="event.preventDefault();">`;
   } else {
     // Empty cell - support both regular input and notes
     const hasNotes = notesBoard && notesBoard[row][col] && notesBoard[row][col].size > 0;
@@ -1306,12 +1339,18 @@ function renderSingleCell(row, col) {
     
     td.innerHTML = `
       <input type="text" onclick="selectCell(${row}, ${col})" class="regular-input ${isSelected && !isNotesMode ? 'selected' : ''}" maxlength="1" 
+             readonly="readonly"
+             inputmode="none"
+             autocomplete="off"
+             tabindex="-1"
              onkeydown="return false;" 
              onkeypress="return false;" 
              onkeyup="return false;"
              oninput="handleInput(event, ${row}, ${col})"
              onpaste="return false;"
-             ondrop="return false;">
+             ondrop="return false;"
+             onfocus="this.blur();"
+             ontouchstart="event.preventDefault(); selectCell(${row}, ${col});">
       <div class="notes-grid">
         ${renderNotesGrid(row, col)}
       </div>
@@ -1442,7 +1481,10 @@ function fillNumber(num) {
   } else {
     // Normal mode: fill regular number
     if (num === 0) {
+      // Remove readonly temporarily to clear value, then restore it
+      cell.removeAttribute('readonly');
       cell.value = '';
+      cell.setAttribute('readonly', 'readonly');
       cell.classList.remove('incorrect');
       // Update cell class when clearing
       const td = cell.parentElement;
@@ -1455,7 +1497,10 @@ function fillNumber(num) {
         td.classList.add('cell-regular');
       }
     } else {
+      // Remove readonly temporarily to set value, then restore it
+      cell.removeAttribute('readonly');
       cell.value = num;
+      cell.setAttribute('readonly', 'readonly');
       cell.classList.remove('incorrect');
       
       // Check if the answer is correct (auto-check in normal mode)
@@ -1739,7 +1784,9 @@ function getHint() {
   const correctAnswer = solutionBoard[randomCell.row][randomCell.col];
   
   // Fill the cell with correct answer
+  randomCell.input.removeAttribute('readonly');
   randomCell.input.value = correctAnswer;
+  randomCell.input.setAttribute('readonly', 'readonly');
   randomCell.input.style.background = '#fef3c7'; // Light yellow for hint
   randomCell.input.style.color = '#d97706'; // Orange text
   randomCell.input.classList.add('hint-cell');
@@ -1770,12 +1817,48 @@ function getHint() {
   setTimeout(checkPuzzleCompletion, 100);
 }
 
+// Mobile keyboard prevention
+function preventMobileKeyboard() {
+  // Additional protection for mobile devices
+  const inputs = document.querySelectorAll('input');
+  inputs.forEach(input => {
+    // Prevent any chance of focus
+    input.addEventListener('focus', function(e) {
+      this.blur();
+      e.preventDefault();
+    });
+    
+    input.addEventListener('touchstart', function(e) {
+      e.preventDefault();
+    });
+    
+    input.addEventListener('touchend', function(e) {
+      e.preventDefault();
+    });
+  });
+  
+  // Prevent zoom on double tap for iOS
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function (event) {
+    const now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, false);
+}
+
 // Initialize the game
 initNotesBoard();
 updateDifficultyDisplay();
 updateTimerDisplay();
 updatePauseButton();
 generateSudoku();
+
+// Apply mobile protections after DOM is ready
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+  preventMobileKeyboard();
+}
 </script>
 </body>
 </html>
