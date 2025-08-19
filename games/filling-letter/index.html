@@ -131,7 +131,7 @@
         </div>
         
         <!-- Game controls with speaker -->
-        <div id="gameControls" class="word-display" style="display:none">
+        <div id="gameControls" class="word-display">
           <button id="wordSpeakBtn" class="word-speak-btn">🔊 Play</button>
           <button id="next" class="primary">New</button>
           <button id="replay">Retry</button>
@@ -146,9 +146,9 @@
         <div id="feedback" class="feedback"></div>
       </div>
 
-      <div class="meta tiny">
+      <div class="meta tiny" style="display:none;">
         Source: Dolch Sight Words.
-        <div id="voiceInfo" style="margin-top:8px;color:#6b7280;"></div>
+        <div id="voiceInfo" style="display:none;"></div>
       </div>
     </div>
   </div>
@@ -243,29 +243,12 @@ function loadVoices() {
   console.log('Selected voice:', UK_VOICE?.name, UK_VOICE?.lang, UK_VOICE?.localService ? '(Local)' : '(Network)');
   
   // Update speech button text based on available voice quality
+  // Simplified button text without voice quality info
   const speakBtn = $("#speak");
-  if (UK_VOICE?.localService) {
-    speakBtn.textContent = "🔊 Play Audio (HD)";
-    speakBtn.title = "High-quality local voice: " + UK_VOICE.name;
-  } else if (UK_VOICE) {
-    speakBtn.textContent = "🔊 Play Audio";
-    speakBtn.title = "Using voice: " + UK_VOICE.name;
-  } else {
-    speakBtn.textContent = "🔊 Play Audio (Basic)";
-    speakBtn.title = "Using default system voice";
-  }
+  speakBtn.textContent = "🔊 Play Audio";
+  speakBtn.title = "Play pronunciation";
   
-  // Update voice info display
-  const voiceInfo = $("#voiceInfo");
-  if (voiceInfo) {
-    if (UK_VOICE?.localService) {
-      voiceInfo.textContent = `Using high-quality voice: ${UK_VOICE.name}`;
-    } else if (UK_VOICE) {
-      voiceInfo.textContent = `Using voice: ${UK_VOICE.name}`;
-    } else {
-      voiceInfo.textContent = "Using default voice. For better pronunciation, use Chrome or Safari with system voices enabled.";
-    }
-  }
+  // Voice info display is hidden
 }
 
 // Some browsers (Chrome) need voiceschanged listener for complete voice list
@@ -451,9 +434,11 @@ function setupRound(word, missingIdxs, translation){
   const gameControls = $("#gameControls");
   const wordTranslation = $("#wordTranslation");
   
-  gameControls.style.display = "flex";
-  wordTranslation.style.display = "block";
-  wordTranslation.textContent = translation || current.translation || "";
+  if(gameControls) gameControls.style.display = "flex";
+  if(wordTranslation) {
+    wordTranslation.style.display = "block";
+    wordTranslation.textContent = translation || current.translation || "";
+  }
   
   // Dynamic slot sizing for mobile
   adjustSlotSizeForMobile(word.length);
