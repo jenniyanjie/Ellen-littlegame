@@ -150,10 +150,13 @@
   <div class="wrap">
     <header>
       <div>
-        <h1>Ellen's Tic Tac Toe with Win Rate Analysis</h1>
-        <div class="sub">Players take turns clicking to place their marks. Monte Carlo simulation estimates X/O/Draw probabilities in real-time.</div>
+        <h1 id="gameTitle">Ellen's Tic Tac Toe with Win Rate Analysis</h1>
+        <div class="sub" id="gameDescription">Players take turns clicking to place their marks. Monte Carlo simulation estimates X/O/Draw probabilities in real-time.</div>
       </div>
-      <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+      <div style="display: flex; gap: 8px; align-items: center;">
+        <button class="theme-toggle" id="languageToggle">🌐 中文</button>
+        <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+      </div>
     </header>
 
     <div class="board" id="board"></div>
@@ -162,26 +165,34 @@
       <div class="status" id="status">Turn: <b id="turn">X</b></div>
 
       <div class="row">
-        <label for="sims">Simulations</label>
+        <label for="sims" id="simulationsLabel">Simulations</label>
         <input id="sims" type="range" min="500" max="5000" step="500" value="1500" />
         <span class="meta" id="simsVal">1500</span>
       </div>
 
       <div class="row">
-        <label>Win Condition</label>
-        <span class="meta">5 in a row to win</span>
+        <label for="gameMode" id="gameModeLabel">游戏模式</label>
+        <select id="gameMode" style="background:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:6px;padding:4px 8px;font:inherit;">
+          <option value="pvp" id="pvpOption">双人对战</option>
+          <option value="ai" id="aiOption">人机对战</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <label id="winConditionLabel">获胜条件</label>
+        <span class="meta" id="winConditionDesc">连续5个子获胜</span>
       </div>
 
       <div class="btns">
-        <button id="rerun">Re-estimate</button>
-        <button id="undo">Undo Move</button>
         <button id="reset">New Game</button>
+        <button id="undo">Undo Move</button>
+        <button id="rerun">Re-estimate</button>
       </div>
 
       <div style="margin-top:14px">
         <div class="nums">
-          <span>X Win: <b id="xPct">--%</b></span>
-          <span>O Win: <b id="oPct">--%</b></span>
+          <span id="xWinLabel">X Win: <b id="xPct">--%</b></span>
+          <span id="oWinLabel">O Win: <b id="oPct">--%</b></span>
         </div>
         <div class="bars">
           <div class="bar x"><span id="xBar" style="width:0%"></span></div>
@@ -189,7 +200,7 @@
           <div class="bar d"><span id="dBar" style="width:0%"></span></div>
         </div>
         <div class="nums">
-          <span>Draw: <b id="dPct">--%</b></span>
+          <span id="drawLabel">Draw: <b id="dPct">--%</b></span>
           <span class="meta" id="timeInfo"></span>
         </div>
       </div>
@@ -206,6 +217,10 @@ let nextPlayer = 'X';
 let gameOver = false;
 let isDarkMode = true;
 let gameHistory = []; // 游戏历史记录
+let gameMode = 'pvp'; // 游戏模式：'pvp' 或 'ai'
+let aiPlayer = 'O'; // AI玩家标记，默认为O
+let isAiThinking = false; // AI是否正在思考
+let currentLanguage = 'en'; // 当前语言：'en' 或 'zh'
 
 // LINES 生成保持不变，自动适配 SIZE
 const LINES = (() => {
@@ -247,11 +262,89 @@ const dBar = document.getElementById('dBar');
 const timeInfo = document.getElementById('timeInfo');
 const themeToggle = document.getElementById('themeToggle');
 const confettiContainer = document.getElementById('confettiContainer');
+const gameModeSelect = document.getElementById('gameMode');
+const languageToggle = document.getElementById('languageToggle');
+const gameTitle = document.getElementById('gameTitle');
+const gameDescription = document.getElementById('gameDescription');
 
 function toggleTheme() {
   isDarkMode = !isDarkMode;
   document.documentElement.setAttribute('data-theme', isDarkMode ? 'dark' : 'light');
-  themeToggle.textContent = isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+  updateThemeButtonText();
+}
+
+function updateThemeButtonText() {
+  if (currentLanguage === 'zh') {
+    themeToggle.textContent = isDarkMode ? '🌙 深色模式' : '☀️ 浅色模式';
+  } else {
+    themeToggle.textContent = isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+  }
+}
+
+function toggleLanguage() {
+  currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+  updateTexts();
+}
+
+function updateTexts() {
+  if (currentLanguage === 'zh') {
+    gameTitle.textContent = 'Ellen的五子棋胜率分析游戏';
+    gameDescription.textContent = '玩家轮流点击放置棋子。蒙特卡洛模拟实时估算X/O/平局概率。';
+    languageToggle.textContent = '🌐 English';
+    
+    // 更新设置标签
+    document.getElementById('simulationsLabel').textContent = '模拟次数';
+    document.getElementById('gameModeLabel').textContent = '游戏模式';
+    document.getElementById('pvpOption').textContent = '双人对战';
+    document.getElementById('aiOption').textContent = '人机对战';
+    document.getElementById('winConditionLabel').textContent = '获胜条件';
+    document.getElementById('winConditionDesc').textContent = '连续5个子获胜';
+    
+    // 更新按钮
+    document.getElementById('reset').textContent = '新游戏';
+    document.getElementById('undo').textContent = '悔棋';
+    document.getElementById('rerun').textContent = '重新评估';
+    
+    // 更新统计标签
+    updateStatsLabels('zh');
+  } else {
+    gameTitle.textContent = "Ellen's Tic Tac Toe with Win Rate Analysis";
+    gameDescription.textContent = 'Players take turns clicking to place their marks. Monte Carlo simulation estimates X/O/Draw probabilities in real-time.';
+    languageToggle.textContent = '🌐 中文';
+    
+    // 更新设置标签
+    document.getElementById('simulationsLabel').textContent = 'Simulations';
+    document.getElementById('gameModeLabel').textContent = 'Game Mode';
+    document.getElementById('pvpOption').textContent = 'PvP Mode';
+    document.getElementById('aiOption').textContent = 'AI Mode';
+    document.getElementById('winConditionLabel').textContent = 'Win Condition';
+    document.getElementById('winConditionDesc').textContent = '5 in a row to win';
+    
+    // 更新按钮
+    document.getElementById('reset').textContent = 'New Game';
+    document.getElementById('undo').textContent = 'Undo Move';
+    document.getElementById('rerun').textContent = 'Re-estimate';
+    
+    // 更新统计标签
+    updateStatsLabels('en');
+  }
+  updateThemeButtonText();
+}
+
+function updateStatsLabels(lang) {
+  const xPct = document.getElementById('xPct').textContent;
+  const oPct = document.getElementById('oPct').textContent;
+  const dPct = document.getElementById('dPct').textContent;
+  
+  if (lang === 'zh') {
+    document.getElementById('xWinLabel').innerHTML = `X胜: <b id="xPct">${xPct}</b>`;
+    document.getElementById('oWinLabel').innerHTML = `O胜: <b id="oPct">${oPct}</b>`;
+    document.getElementById('drawLabel').innerHTML = `平局: <b id="dPct">${dPct}</b>`;
+  } else {
+    document.getElementById('xWinLabel').innerHTML = `X Win: <b id="xPct">${xPct}</b>`;
+    document.getElementById('oWinLabel').innerHTML = `O Win: <b id="oPct">${oPct}</b>`;
+    document.getElementById('drawLabel').innerHTML = `Draw: <b id="dPct">${dPct}</b>`;
+  }
 }
 
 function createConfetti() {
@@ -305,14 +398,31 @@ function highlightWinningCells(winningLine) {
 function undoMove() {
   if (gameHistory.length === 0) return;
   
-  const lastState = gameHistory.pop();
-  board = lastState.board;
-  nextPlayer = lastState.nextPlayer;
-  gameOver = lastState.gameOver;
+  // 在AI模式下，需要撤销两步（玩家和AI的移动）
+  if (gameMode === 'ai' && gameHistory.length >= 2) {
+    gameHistory.pop(); // 撤销AI的移动
+    if (gameHistory.length > 0) {
+      gameHistory.pop(); // 撤销玩家的移动
+    }
+  } else {
+    gameHistory.pop();
+  }
   
-  // 重置状态显示
-  statusEl.innerHTML = `Turn: <b id="turn">${nextPlayer}</b>`;
+  // 恢复到上一个状态
+  if (gameHistory.length > 0) {
+    const lastState = gameHistory[gameHistory.length - 1];
+    board = lastState.board.slice();
+    nextPlayer = lastState.nextPlayer;
+    gameOver = lastState.gameOver;
+  } else {
+    // 如果没有历史记录，重置到初始状态
+    board = Array(CELLS).fill(null);
+    nextPlayer = 'X';
+    gameOver = false;
+  }
   
+  isAiThinking = false;
+  updateStatusDisplay();
   renderBoard();
   estimateAndRender();
   updateUndoButton();
@@ -330,14 +440,14 @@ function renderBoard() {
     const div = document.createElement('div');
     div.className = 'cell' + (board[i] ? ' '+board[i] : '');
     div.textContent = board[i] ?? '';
-    if (!gameOver && !board[i]) {
+    if (!gameOver && !board[i] && !isAiThinking) {
       div.addEventListener('click', () => handleMove(i), {once:true});
     } else {
       div.classList.add('disabled');
     }
     boardEl.appendChild(div);
   }
-  turnEl.textContent = nextPlayer;
+  updateStatusDisplay();
 }
 
 function getAvailableMoves(b){ const m=[]; for(let i=0;i<b.length;i++) if(b[i]==null) m.push(i); return m; }
@@ -355,8 +465,152 @@ function getWinner(b) {
 
 function isGameOver(b){ return !!getWinner(b) || getAvailableMoves(b).length===0; }
 
-function handleMove(idx){
-  if (gameOver || board[idx]) return;
+// 更新状态显示
+function updateStatusDisplay() {
+  if (gameOver) return;
+  
+  let displayText = '';
+  if (gameMode === 'ai') {
+    if (nextPlayer === aiPlayer) {
+      displayText = currentLanguage === 'zh' ? `AI (${nextPlayer}) 思考中...` : `AI (${nextPlayer}) thinking...`;
+      isAiThinking = true;
+    } else {
+      const turnText = currentLanguage === 'zh' ? '轮到' : 'Turn';
+      const playerText = currentLanguage === 'zh' ? '玩家' : 'Player';
+      displayText = `${turnText}: <b>${nextPlayer}</b> (${playerText})`;
+      isAiThinking = false;
+    }
+  } else {
+    const turnText = currentLanguage === 'zh' ? '轮到' : 'Turn';
+    displayText = `${turnText}: <b>${nextPlayer}</b>`;
+    isAiThinking = false;
+  }
+  statusEl.innerHTML = displayText;
+}
+
+// AI评分函数
+function evaluatePosition(board, player) {
+  const opponent = player === 'X' ? 'O' : 'X';
+  let score = 0;
+  
+  // 检查所有可能的5连线
+  for (const line of LINES) {
+    let playerCount = 0;
+    let opponentCount = 0;
+    let emptyCount = 0;
+    
+    for (const pos of line) {
+      if (board[pos] === player) playerCount++;
+      else if (board[pos] === opponent) opponentCount++;
+      else emptyCount++;
+    }
+    
+    // 如果这条线有对手的子，就不能形成己方的5连
+    if (opponentCount > 0 && playerCount > 0) continue;
+    
+    // 己方的连子评分
+    if (playerCount > 0 && opponentCount === 0) {
+      if (playerCount === 5) score += 100000;
+      else if (playerCount === 4) score += 10000;
+      else if (playerCount === 3) score += 1000;
+      else if (playerCount === 2) score += 100;
+      else if (playerCount === 1) score += 10;
+    }
+    
+    // 对手的连子威胁评分（需要阻止）
+    if (opponentCount > 0 && playerCount === 0) {
+      if (opponentCount === 4) score -= 50000; // 必须阻止对手4连
+      else if (opponentCount === 3) score -= 5000;
+      else if (opponentCount === 2) score -= 500;
+      else if (opponentCount === 1) score -= 50;
+    }
+  }
+  
+  return score;
+}
+
+// AI选择最佳移动
+function getBestMove(board, player) {
+  const moves = getAvailableMoves(board);
+  if (moves.length === 0) return null;
+  
+  let bestMove = moves[0];
+  let bestScore = -Infinity;
+  
+  // 如果是第一步，选择中心位置
+  if (moves.length === CELLS) {
+    const center = Math.floor(SIZE / 2) * SIZE + Math.floor(SIZE / 2);
+    return center;
+  }
+  
+  // 为每个可能的移动计算评分
+  for (const move of moves) {
+    const testBoard = board.slice();
+    testBoard[move] = player;
+    
+    // 检查是否能直接获胜
+    const winResult = getWinner(testBoard);
+    if (winResult && winResult.winner === player) {
+      return move; // 直接获胜
+    }
+    
+    // 检查是否需要阻止对手获胜
+    const opponent = player === 'X' ? 'O' : 'X';
+    testBoard[move] = opponent;
+    const opponentWin = getWinner(testBoard);
+    if (opponentWin && opponentWin.winner === opponent) {
+      testBoard[move] = player; // 恢复为AI的移动
+      const score = evaluatePosition(testBoard, player) + 60000; // 阻止对手获胜的高分
+      if (score > bestScore) {
+        bestScore = score;
+        bestMove = move;
+      }
+      continue;
+    }
+    
+    // 正常评分
+    testBoard[move] = player;
+    const score = evaluatePosition(testBoard, player);
+    
+    // 位置奖励：更靠近中心的位置获得额外分数
+    const row = Math.floor(move / SIZE);
+    const col = move % SIZE;
+    const centerRow = Math.floor(SIZE / 2);
+    const centerCol = Math.floor(SIZE / 2);
+    const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
+    const positionBonus = Math.max(0, 10 - distanceFromCenter);
+    
+    const finalScore = score + positionBonus;
+    
+    if (finalScore > bestScore) {
+      bestScore = finalScore;
+      bestMove = move;
+    }
+  }
+  
+  return bestMove;
+}
+
+// AI执行移动
+function makeAiMove() {
+  if (gameOver || nextPlayer !== aiPlayer) return;
+  
+  isAiThinking = true;
+  updateStatusDisplay();
+  renderBoard();
+  
+  // 使用setTimeout来模拟AI思考时间
+  setTimeout(() => {
+    const bestMove = getBestMove(board, aiPlayer);
+    if (bestMove !== null) {
+      handleMove(bestMove, true);
+    }
+    isAiThinking = false;
+  }, 800 + Math.random() * 400); // 800-1200ms的思考时间
+}
+
+function handleMove(idx, isAiMove = false){
+  if (gameOver || board[idx] || (gameMode === 'ai' && !isAiMove && nextPlayer === aiPlayer)) return;
   
   // 保存当前状态到历史记录
   gameHistory.push({
@@ -369,19 +623,29 @@ function handleMove(idx){
   const winnerResult = getWinner(board);
   if (winnerResult) {
     gameOver = true;
-    statusEl.innerHTML = `Game Over: <b>${winnerResult.winner}</b> Wins!`;
+    const winnerText = gameMode === 'ai' && winnerResult.winner === aiPlayer ? 'AI' : winnerResult.winner;
+    const gameOverText = currentLanguage === 'zh' ? '游戏结束' : 'Game Over';
+    const winsText = currentLanguage === 'zh' ? '获胜！' : 'Wins!';
+    statusEl.innerHTML = `${gameOverText}: <b>${winnerText}</b> ${winsText}`;
     createConfetti();
     highlightWinningCells(winnerResult.line);
   } else if (getAvailableMoves(board).length===0) {
     gameOver = true;
-    statusEl.textContent = `Game Over: Draw!`;
+    const gameOverText = currentLanguage === 'zh' ? '游戏结束' : 'Game Over';
+    const drawText = currentLanguage === 'zh' ? '平局！' : 'Draw!';
+    statusEl.textContent = `${gameOverText}: ${drawText}`;
   } else {
     nextPlayer = nextPlayer==='X' ? 'O' : 'X';
-    statusEl.innerHTML = `Turn: <b id="turn">${nextPlayer}</b>`;
+    updateStatusDisplay();
   }
   renderBoard();
   estimateAndRender();
   updateUndoButton();
+  
+  // 在人机模式下，如果轮到AI，自动执行AI移动
+  if (gameMode === 'ai' && !gameOver && nextPlayer === aiPlayer) {
+    setTimeout(() => makeAiMove(), 500); // 延迟500ms让用户看到变化
+  }
 }
 
 function playRandomGame(b, player){
@@ -431,13 +695,28 @@ function estimateAndRender(){
 
 function updateBars(rates, ms){
   const toPct = v => Math.round(v*100);
-  xPctEl.textContent = toPct(rates.x) + '%';
-  oPctEl.textContent = toPct(rates.o) + '%';
-  dPctEl.textContent = toPct(rates.d) + '%';
+  const xPct = toPct(rates.x) + '%';
+  const oPct = toPct(rates.o) + '%';
+  const dPct = toPct(rates.d) + '%';
+  
+  xPctEl.textContent = xPct;
+  oPctEl.textContent = oPct;
+  dPctEl.textContent = dPct;
   xBar.style.width = (rates.x*100) + '%';
   oBar.style.width = (rates.o*100) + '%';
   dBar.style.width = (rates.d*100) + '%';
   timeInfo.textContent = ms ? `${Math.round(ms)}ms` : '';
+  
+  // 更新带语言的标签
+  if (currentLanguage === 'zh') {
+    document.getElementById('xWinLabel').innerHTML = `X胜: <b id="xPct">${xPct}</b>`;
+    document.getElementById('oWinLabel').innerHTML = `O胜: <b id="oPct">${oPct}</b>`;
+    document.getElementById('drawLabel').innerHTML = `平局: <b id="dPct">${dPct}</b>`;
+  } else {
+    document.getElementById('xWinLabel').innerHTML = `X Win: <b id="xPct">${xPct}</b>`;
+    document.getElementById('oWinLabel').innerHTML = `O Win: <b id="oPct">${oPct}</b>`;
+    document.getElementById('drawLabel').innerHTML = `Draw: <b id="dPct">${dPct}</b>`;
+  }
 }
 
 simsInput.addEventListener('input', ()=>{ simsVal.textContent = simsInput.value; });
@@ -448,16 +727,45 @@ document.getElementById('reset').addEventListener('click', ()=>{
   nextPlayer = 'X';
   gameOver = false;
   gameHistory = []; // 清空历史记录
-  statusEl.innerHTML = `Turn: <b id="turn">X</b>`;
+  isAiThinking = false;
+  updateStatusDisplay();
+  renderBoard();
+  estimateAndRender();
+  updateUndoButton();
+});
+
+// 游戏模式切换事件
+gameModeSelect.addEventListener('change', (e) => {
+  gameMode = e.target.value;
+  // 重置游戏
+  board = Array(CELLS).fill(null);
+  nextPlayer = 'X';
+  gameOver = false;
+  gameHistory = [];
+  isAiThinking = false;
+  
+  // 在AI模式下，AI总是扮演O
+  aiPlayer = 'O';
+  
+  updateStatusDisplay();
   renderBoard();
   estimateAndRender();
   updateUndoButton();
 });
 themeToggle.addEventListener('click', toggleTheme);
+languageToggle.addEventListener('click', toggleLanguage);
 
 renderBoard();
 estimateAndRender();
 updateUndoButton();
+
+// 初始化游戏模式
+gameMode = gameModeSelect.value;
+
+// 初始化语言为中文
+currentLanguage = 'zh';
+updateTexts();
+updateStatusDisplay();
 
 </script>
 </body>
