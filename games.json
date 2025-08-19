@@ -16,6 +16,12 @@
       "title": "Ellen's Memory Card Match",
       "desc": "Memory card match game",
       "thumb": "games/memory-card-match/cover.png"
+    },
+    {
+      "slug": "filling-letter",
+      "title": "Ellen's Missing Letter",
+      "desc": "Filling missing letter in the word",
+      "thumb": "games/filling-letter/cover.png"
     }
   ]
   
