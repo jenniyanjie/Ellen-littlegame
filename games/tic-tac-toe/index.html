@@ -416,24 +416,33 @@ function highlightWinningCells(winningLine) {
 function undoMove() {
   if (gameHistory.length === 0) return;
   
-  // 在AI模式下，需要撤销两步（玩家和AI的移动）
-  if (gameMode === 'ai' && gameHistory.length >= 2) {
-    gameHistory.pop(); // 撤销AI的移动
-    if (gameHistory.length > 0) {
-      gameHistory.pop(); // 撤销玩家的移动
+  let targetState;
+  
+  if (gameMode === 'ai') {
+    // AI模式：恢复到玩家移动前的状态
+    if (gameHistory.length >= 2) {
+      // 恢复到倒数第二个状态（玩家移动前）
+      targetState = gameHistory[gameHistory.length - 2];
+      // 移除最后两个历史记录
+      gameHistory.splice(-2, 2);
+    } else if (gameHistory.length === 1) {
+      // 只有一个历史记录时，恢复到初始状态
+      targetState = null;
+      gameHistory.splice(-1, 1);
     }
   } else {
+    // PvP模式：恢复到上一步移动前的状态
+    targetState = gameHistory[gameHistory.length - 1];
     gameHistory.pop();
   }
   
-  // 恢复到上一个状态
-  if (gameHistory.length > 0) {
-    const lastState = gameHistory[gameHistory.length - 1];
-    board = lastState.board.slice();
-    nextPlayer = lastState.nextPlayer;
-    gameOver = lastState.gameOver;
+  // 恢复游戏状态
+  if (targetState) {
+    board = targetState.board.slice();
+    nextPlayer = targetState.nextPlayer;
+    gameOver = targetState.gameOver;
   } else {
-    // 如果没有历史记录，重置到初始状态
+    // 恢复到初始状态
     board = Array(CELLS).fill(null);
     nextPlayer = 'X';
     gameOver = false;
