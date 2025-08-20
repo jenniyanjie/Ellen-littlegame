@@ -574,11 +574,11 @@ function getBestMove(board, player) {
   }
 }
 
-// 简单难度：50%最佳移动，50%随机移动
+// 简单难度：60%最佳移动，40%随机移动
 function getEasyMove(board, player, moves) {
-  // 如果是第一步，75%概率选择中心，25%随机
+  // 如果是第一步，85%概率选择中心，15%随机
   if (moves.length === CELLS) {
-    if (Math.random() < 0.75) {
+    if (Math.random() < 0.85) {
       const center = Math.floor(SIZE / 2) * SIZE + Math.floor(SIZE / 2);
       return center;
     } else {
@@ -596,8 +596,8 @@ function getEasyMove(board, player, moves) {
     }
   }
   
-  // 85%概率检查阻止对手获胜
-  if (Math.random() < 0.85) {
+  // 90%概率检查阻止对手获胜
+  if (Math.random() < 0.9) {
     const opponent = player === 'X' ? 'O' : 'X';
     for (const move of moves) {
       const testBoard = board.slice();
@@ -609,8 +609,8 @@ function getEasyMove(board, player, moves) {
     }
   }
   
-  // 50%概率选择最佳移动，50%随机移动
-  if (Math.random() < 0.5) {
+  // 60%概率选择最佳移动，40%随机移动
+  if (Math.random() < 0.6) {
     return getHardMove(board, player, moves);
   } else {
     return moves[Math.floor(Math.random() * moves.length)];
