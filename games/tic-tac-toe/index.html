@@ -225,7 +225,7 @@ const CELLS = SIZE * SIZE;
 let board = Array(CELLS).fill(null);
 let nextPlayer = 'X';
 let gameOver = false;
-let isDarkMode = true;
+let isDarkMode = false;
 let gameHistory = []; // 游戏历史记录
 let gameMode = 'pvp'; // 游戏模式：'pvp' 或 'ai'
 let aiPlayer = 'O'; // AI玩家标记，默认为O
@@ -927,6 +927,9 @@ if (gameMode === 'ai') {
 } else {
   difficultyRow.style.display = 'none';
 }
+
+// 初始化主题为浅色模式
+document.documentElement.setAttribute('data-theme', 'light');
 
 // 初始化语言为中文
 currentLanguage = 'zh';
