@@ -90,20 +90,22 @@
     header {
       flex-direction: column;
       align-items: flex-start;
-      gap: 12px;
+      gap: 8px;
+    }
+    
+    header > div:last-child {
+      align-self: flex-end;
+      margin-top: 0;
     }
     
     .theme-toggle {
-      align-self: flex-end;
-      margin-top: -32px;
+      font-size: 11px;
+      padding: 4px 8px;
     }
     
     h1 {
       font-size: 18px;
-    }
-    
-    .sub {
-      font-size: 12px;
+      margin-bottom: 4px;
     }
     
     :root {
@@ -151,11 +153,10 @@
     <header>
       <div>
         <h1 id="gameTitle">Ellen's Tic Tac Toe with Win Rate Analysis</h1>
-        <div class="sub" id="gameDescription">Players take turns clicking to place their marks. Monte Carlo simulation estimates X/O/Draw probabilities in real-time.</div>
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
         <button class="theme-toggle" id="languageToggle">🌐 中文</button>
-        <button class="theme-toggle" id="themeToggle">🌙 Dark Mode</button>
+        <button class="theme-toggle" id="themeToggle">☀️ Light Mode</button>
       </div>
     </header>
 
@@ -178,9 +179,18 @@
         </select>
       </div>
 
+      <div class="row" id="difficultyRow" style="display:none;">
+        <label for="aiDifficulty" id="difficultyLabel">AI难度</label>
+        <select id="aiDifficulty" style="background:var(--btn-bg);color:var(--fg);border:1px solid var(--btn-border);border-radius:6px;padding:4px 8px;font:inherit;">
+          <option value="easy" id="easyOption">简单</option>
+          <option value="medium" id="mediumOption" selected>中等</option>
+          <option value="hard" id="hardOption">困难</option>
+        </select>
+      </div>
+
       <div class="row">
         <label id="winConditionLabel">获胜条件</label>
-        <span class="meta" id="winConditionDesc">连续5个子获胜</span>
+        <span class="meta" id="winConditionDesc">玩家轮流点击放置棋子，连续放置5个子获胜</span>
       </div>
 
       <div class="btns">
@@ -221,6 +231,7 @@ let gameMode = 'pvp'; // 游戏模式：'pvp' 或 'ai'
 let aiPlayer = 'O'; // AI玩家标记，默认为O
 let isAiThinking = false; // AI是否正在思考
 let currentLanguage = 'en'; // 当前语言：'en' 或 'zh'
+let aiDifficulty = 'medium'; // AI难度：'easy', 'medium', 'hard'
 
 // LINES 生成保持不变，自动适配 SIZE
 const LINES = (() => {
@@ -263,9 +274,10 @@ const timeInfo = document.getElementById('timeInfo');
 const themeToggle = document.getElementById('themeToggle');
 const confettiContainer = document.getElementById('confettiContainer');
 const gameModeSelect = document.getElementById('gameMode');
+const aiDifficultySelect = document.getElementById('aiDifficulty');
+const difficultyRow = document.getElementById('difficultyRow');
 const languageToggle = document.getElementById('languageToggle');
 const gameTitle = document.getElementById('gameTitle');
-const gameDescription = document.getElementById('gameDescription');
 
 function toggleTheme() {
   isDarkMode = !isDarkMode;
@@ -275,9 +287,9 @@ function toggleTheme() {
 
 function updateThemeButtonText() {
   if (currentLanguage === 'zh') {
-    themeToggle.textContent = isDarkMode ? '🌙 深色模式' : '☀️ 浅色模式';
+    themeToggle.textContent = isDarkMode ? '☀️ 浅色模式' : '🌙 深色模式';
   } else {
-    themeToggle.textContent = isDarkMode ? '🌙 Dark Mode' : '☀️ Light Mode';
+    themeToggle.textContent = isDarkMode ? '☀️ Light Mode' : '🌙 Dark Mode';
   }
 }
 
@@ -289,7 +301,6 @@ function toggleLanguage() {
 function updateTexts() {
   if (currentLanguage === 'zh') {
     gameTitle.textContent = 'Ellen的五子棋胜率分析游戏';
-    gameDescription.textContent = '玩家轮流点击放置棋子。蒙特卡洛模拟实时估算X/O/平局概率。';
     languageToggle.textContent = '🌐 English';
     
     // 更新设置标签
@@ -297,8 +308,12 @@ function updateTexts() {
     document.getElementById('gameModeLabel').textContent = '游戏模式';
     document.getElementById('pvpOption').textContent = '双人对战';
     document.getElementById('aiOption').textContent = '人机对战';
+    document.getElementById('difficultyLabel').textContent = 'AI难度';
+    document.getElementById('easyOption').textContent = '简单';
+    document.getElementById('mediumOption').textContent = '中等';
+    document.getElementById('hardOption').textContent = '困难';
     document.getElementById('winConditionLabel').textContent = '获胜条件';
-    document.getElementById('winConditionDesc').textContent = '连续5个子获胜';
+    document.getElementById('winConditionDesc').textContent = '玩家轮流点击放置棋子，连续放置5个子获胜';
     
     // 更新按钮
     document.getElementById('reset').textContent = '新游戏';
@@ -309,7 +324,6 @@ function updateTexts() {
     updateStatsLabels('zh');
   } else {
     gameTitle.textContent = "Ellen's Tic Tac Toe with Win Rate Analysis";
-    gameDescription.textContent = 'Players take turns clicking to place their marks. Monte Carlo simulation estimates X/O/Draw probabilities in real-time.';
     languageToggle.textContent = '🌐 中文';
     
     // 更新设置标签
@@ -317,8 +331,12 @@ function updateTexts() {
     document.getElementById('gameModeLabel').textContent = 'Game Mode';
     document.getElementById('pvpOption').textContent = 'PvP Mode';
     document.getElementById('aiOption').textContent = 'AI Mode';
+    document.getElementById('difficultyLabel').textContent = 'AI Difficulty';
+    document.getElementById('easyOption').textContent = 'Easy';
+    document.getElementById('mediumOption').textContent = 'Medium';
+    document.getElementById('hardOption').textContent = 'Hard';
     document.getElementById('winConditionLabel').textContent = 'Win Condition';
-    document.getElementById('winConditionDesc').textContent = '5 in a row to win';
+    document.getElementById('winConditionDesc').textContent = 'Players take turns clicking to place their marks, 5 in a row to win';
     
     // 更新按钮
     document.getElementById('reset').textContent = 'New Game';
@@ -529,11 +547,122 @@ function evaluatePosition(board, player) {
   return score;
 }
 
-// AI选择最佳移动
+// AI选择最佳移动（根据难度调整）
 function getBestMove(board, player) {
   const moves = getAvailableMoves(board);
   if (moves.length === 0) return null;
   
+  // 根据难度决定策略
+  switch (aiDifficulty) {
+    case 'easy':
+      return getEasyMove(board, player, moves);
+    case 'medium':
+      return getMediumMove(board, player, moves);
+    case 'hard':
+      return getHardMove(board, player, moves);
+    default:
+      return getMediumMove(board, player, moves);
+  }
+}
+
+// 简单难度：50%最佳移动，50%随机移动
+function getEasyMove(board, player, moves) {
+  // 如果是第一步，75%概率选择中心，25%随机
+  if (moves.length === CELLS) {
+    if (Math.random() < 0.75) {
+      const center = Math.floor(SIZE / 2) * SIZE + Math.floor(SIZE / 2);
+      return center;
+    } else {
+      return moves[Math.floor(Math.random() * moves.length)];
+    }
+  }
+  
+  // 总是检查获胜机会
+  for (const move of moves) {
+    const testBoard = board.slice();
+    testBoard[move] = player;
+    const winResult = getWinner(testBoard);
+    if (winResult && winResult.winner === player) {
+      return move; // 如果能获胜，总是选择获胜
+    }
+  }
+  
+  // 85%概率检查阻止对手获胜
+  if (Math.random() < 0.85) {
+    const opponent = player === 'X' ? 'O' : 'X';
+    for (const move of moves) {
+      const testBoard = board.slice();
+      testBoard[move] = opponent;
+      const opponentWin = getWinner(testBoard);
+      if (opponentWin && opponentWin.winner === opponent) {
+        return move; // 阻止对手获胜
+      }
+    }
+  }
+  
+  // 50%概率选择最佳移动，50%随机移动
+  if (Math.random() < 0.5) {
+    return getHardMove(board, player, moves);
+  } else {
+    return moves[Math.floor(Math.random() * moves.length)];
+  }
+}
+
+// 中等难度：70%最佳移动，30%次优移动
+function getMediumMove(board, player, moves) {
+  // 如果是第一步，选择中心位置
+  if (moves.length === CELLS) {
+    const center = Math.floor(SIZE / 2) * SIZE + Math.floor(SIZE / 2);
+    return center;
+  }
+  
+  // 总是检查获胜机会
+  for (const move of moves) {
+    const testBoard = board.slice();
+    testBoard[move] = player;
+    const winResult = getWinner(testBoard);
+    if (winResult && winResult.winner === player) {
+      return move;
+    }
+  }
+  
+  // 总是阻止对手获胜
+  const opponent = player === 'X' ? 'O' : 'X';
+  for (const move of moves) {
+    const testBoard = board.slice();
+    testBoard[move] = opponent;
+    const opponentWin = getWinner(testBoard);
+    if (opponentWin && opponentWin.winner === opponent) {
+      return move;
+    }
+  }
+  
+  // 70%概率选择最佳移动
+  if (Math.random() < 0.7) {
+    return getHardMove(board, player, moves);
+  } else {
+    // 30%概率选择次优移动（随机选择前50%的好移动）
+    const scoredMoves = moves.map(move => {
+      const testBoard = board.slice();
+      testBoard[move] = player;
+      const score = evaluatePosition(testBoard, player);
+      const row = Math.floor(move / SIZE);
+      const col = move % SIZE;
+      const centerRow = Math.floor(SIZE / 2);
+      const centerCol = Math.floor(SIZE / 2);
+      const distanceFromCenter = Math.abs(row - centerRow) + Math.abs(col - centerCol);
+      const positionBonus = Math.max(0, 10 - distanceFromCenter);
+      return { move, score: score + positionBonus };
+    });
+    
+    scoredMoves.sort((a, b) => b.score - a.score);
+    const topMoves = scoredMoves.slice(0, Math.max(1, Math.floor(scoredMoves.length * 0.5)));
+    return topMoves[Math.floor(Math.random() * topMoves.length)].move;
+  }
+}
+
+// 困难难度：总是选择最佳移动
+function getHardMove(board, player, moves) {
   let bestMove = moves[0];
   let bestScore = -Infinity;
   
@@ -599,14 +728,29 @@ function makeAiMove() {
   updateStatusDisplay();
   renderBoard();
   
-  // 使用setTimeout来模拟AI思考时间
+  // 使用setTimeout来模拟AI思考时间（根据难度调整）
+  let thinkingTime;
+  switch (aiDifficulty) {
+    case 'easy':
+      thinkingTime = 500 + Math.random() * 400; // 500-900ms
+      break;
+    case 'medium':
+      thinkingTime = 600 + Math.random() * 400; // 600-1000ms
+      break;
+    case 'hard':
+      thinkingTime = 800 + Math.random() * 500; // 800-1300ms
+      break;
+    default:
+      thinkingTime = 600 + Math.random() * 400;
+  }
+  
   setTimeout(() => {
     const bestMove = getBestMove(board, aiPlayer);
     if (bestMove !== null) {
       handleMove(bestMove, true);
     }
     isAiThinking = false;
-  }, 800 + Math.random() * 400); // 800-1200ms的思考时间
+  }, thinkingTime);
 }
 
 function handleMove(idx, isAiMove = false){
@@ -737,6 +881,14 @@ document.getElementById('reset').addEventListener('click', ()=>{
 // 游戏模式切换事件
 gameModeSelect.addEventListener('change', (e) => {
   gameMode = e.target.value;
+  
+  // 显示或隐藏难度选择器
+  if (gameMode === 'ai') {
+    difficultyRow.style.display = 'flex';
+  } else {
+    difficultyRow.style.display = 'none';
+  }
+  
   // 重置游戏
   board = Array(CELLS).fill(null);
   nextPlayer = 'X';
@@ -752,6 +904,12 @@ gameModeSelect.addEventListener('change', (e) => {
   estimateAndRender();
   updateUndoButton();
 });
+
+// AI难度切换事件
+aiDifficultySelect.addEventListener('change', (e) => {
+  aiDifficulty = e.target.value;
+  // 不需要重置游戏，只是改变AI策略
+});
 themeToggle.addEventListener('click', toggleTheme);
 languageToggle.addEventListener('click', toggleLanguage);
 
@@ -761,6 +919,14 @@ updateUndoButton();
 
 // 初始化游戏模式
 gameMode = gameModeSelect.value;
+aiDifficulty = aiDifficultySelect.value;
+
+// 根据初始游戏模式显示或隐藏难度选择器
+if (gameMode === 'ai') {
+  difficultyRow.style.display = 'flex';
+} else {
+  difficultyRow.style.display = 'none';
+}
 
 // 初始化语言为中文
 currentLanguage = 'zh';
