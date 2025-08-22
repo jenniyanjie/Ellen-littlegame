@@ -67,20 +67,13 @@ const englishLessons = [
     {
         week: 1,
         date: "2025-08-07",
-        title: "2025-08-07：基础词汇一",
+        title: "2025-08-07：基础词汇",
         vocabulary: [
             { en: 'boy', zh: '男孩' },
             { en: 'next', zh: '下一个' },
             { en: 'our', zh: '我们的' },
             { en: 'friends', zh: '朋友们' },
-            { en: 'new', zh: '新的' }
-        ]
-    },
-    {
-        week: 2,
-        date: "2025-08-07",
-        title: "2025-08-07：基础词汇二", 
-        vocabulary: [
+            { en: 'new', zh: '新的' },
             { en: 'car', zh: '汽车' },
             { en: 'far', zh: '远的' },
             { en: 'hair', zh: '头发' },
@@ -89,22 +82,15 @@ const englishLessons = [
         ]
     },
     {
-        week: 3,
+        week: 2,
         date: "2025-08-14",
-        title: "2025-08-14：介词与动词一",
+        title: "2025-08-14：介词与动词",
         vocabulary: [
             { en: 'under', zh: '在...下面' },
             { en: 'from', zh: '从...来' },
             { en: 'even', zh: '甚至' },
             { en: 'into', zh: '进入' },
-            { en: 'through', zh: '穿过' }
-        ]
-    },
-    {
-        week: 4,
-        date: "2025-08-14",
-        title: "2025-08-14：介词与动词二",
-        vocabulary: [
+            { en: 'through', zh: '穿过' },
             { en: 'another', zh: '另一个' },
             { en: 'reef', zh: '礁石' },
             { en: 'seem', zh: '似乎' },
@@ -113,22 +99,15 @@ const englishLessons = [
         ]
     },
     {
-        week: 5,
+        week: 3,
         date: "2025-08-21",
-        title: "2025-08-21：形容词与动词一",
+        title: "2025-08-21：形容词与动词",
         vocabulary: [
             { en: 'clothes', zh: '衣服' },
             { en: 'asked', zh: '问过' },
             { en: 'fell', zh: '跌倒' },
             { en: 'bad', zh: '坏的' },
-            { en: 'why', zh: '为什么' }
-        ]
-    },
-    {
-        week: 6,
-        date: "2025-08-21",
-        title: "2025-08-21：形容词与动词二",
-        vocabulary: [
+            { en: 'why', zh: '为什么' },
             { en: 'bright', zh: '明亮的' },
             { en: 'dim', zh: '暗的' },
             { en: 'road', zh: '道路' },
@@ -137,22 +116,15 @@ const englishLessons = [
         ]
     },
     {
-        week: 7,
+        week: 4,
         date: "2025-08-28",
-        title: "2025-08-28：时间与数字一",
+        title: "2025-08-28：时间与数字",
         vocabulary: [
             { en: 'four', zh: '四' },
             { en: 'things', zh: '事情' },
             { en: 'blue', zh: '蓝色的' },
             { en: 'time', zh: '时间' },
-            { en: 'about', zh: '关于' }
-        ]
-    },
-    {
-        week: 8,
-        date: "2025-08-28",
-        title: "2025-08-28：时间与数字二",
-        vocabulary: [
+            { en: 'about', zh: '关于' },
             { en: 'timetable', zh: '时间表' },
             { en: 'first', zh: '第一' },
             { en: 'after', zh: '在...之后' },
@@ -161,22 +133,15 @@ const englishLessons = [
         ]
     },
     {
-        week: 9,
+        week: 5,
         date: "2025-09-04",
-        title: "2025-09-04：日常表达一",
+        title: "2025-09-04：日常表达",
         vocabulary: [
             { en: 'so', zh: '所以' },
             { en: 'would', zh: '将会' },
             { en: 'better', zh: '更好的' },
             { en: 'way', zh: '方法' },
-            { en: 'fun', zh: '有趣的' }
-        ]
-    },
-    {
-        week: 10,
-        date: "2025-09-04",
-        title: "2025-09-04：日常表达二",
-        vocabulary: [
+            { en: 'fun', zh: '有趣的' },
             { en: 'blow', zh: '吹' },
             { en: 'balloon', zh: '气球' },
             { en: 'slowly', zh: '慢慢地' },

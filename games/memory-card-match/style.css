@@ -89,16 +89,16 @@ h1 {
 
 .game-board {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 15px;
-    max-width: 600px;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    max-width: 700px;
     margin: 0 auto 30px;
     animation: fadeIn 1s ease-out 0.5s both;
 }
 
 .card {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     perspective: 1000px;
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -225,30 +225,30 @@ h1 {
 /* 响应式设计 */
 @media (max-width: 768px) {
     .game-board {
-        grid-template-columns: repeat(3, 1fr);
-        max-width: 400px;
-        gap: 10px;
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 500px;
+        gap: 8px;
     }
     
     .card {
-        width: 100px;
-        height: 100px;
+        width: 80px;
+        height: 80px;
     }
     
     .card-back {
-        font-size: 1.5em;
+        font-size: 1.3em;
     }
     
     .card.pinyin .card-front {
-        font-size: 1.2em;
+        font-size: 1.0em;
     }
     
     .card.zh .card-front {
-        font-size: 1.5em;
+        font-size: 1.3em;
     }
     
     .card.en .card-front {
-        font-size: 1.1em;
+        font-size: 0.9em;
     }
     
     h1 {
@@ -274,29 +274,30 @@ h1 {
 
 @media (max-width: 480px) {
     .game-board {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 300px;
+        grid-template-columns: repeat(4, 1fr);
+        max-width: 350px;
+        gap: 6px;
     }
     
     .card {
-        width: 80px;
-        height: 80px;
+        width: 70px;
+        height: 70px;
     }
     
     .card-back {
-        font-size: 1.2em;
-    }
-    
-    .card.pinyin .card-front {
         font-size: 1.0em;
     }
     
+    .card.pinyin .card-front {
+        font-size: 0.8em;
+    }
+    
     .card.zh .card-front {
-        font-size: 1.3em;
+        font-size: 1.1em;
     }
     
     .card.en .card-front {
-        font-size: 0.9em;
+        font-size: 0.7em;
     }
     
     h1 {
