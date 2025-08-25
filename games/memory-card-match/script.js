@@ -154,7 +154,7 @@ const englishLessons = [
 // 当前学习模式：'chinese' 或 'english'
 let currentMode = 'chinese';
 let currentWeek = 1;
-let vocabulary = chineseLessons[0].vocabulary;
+let vocabulary = [];
 
 const gameBoard = document.getElementById('game-board');
 const matchesDisplay = document.getElementById('matches');
@@ -237,12 +237,40 @@ function adjustAllCardFonts() {
     }
 }
 
+// 获取随机的中文词汇（合并所有日期的词汇）
+function getRandomChineseVocabulary(count = 10) {
+    // 合并所有中文课程的词汇
+    const allVocabulary = [];
+    chineseLessons.forEach(lesson => {
+        allVocabulary.push(...lesson.vocabulary);
+    });
+    
+    // 随机打乱数组
+    const shuffled = allVocabulary.sort(() => 0.5 - Math.random());
+    
+    // 返回指定数量的词汇，如果总数不够就返回全部
+    return shuffled.slice(0, Math.min(count, shuffled.length));
+}
+
 // 切换学习模式
 function switchMode(mode) {
     currentMode = mode;
     currentWeek = 1;
-    updateWeekOptions();
-    updateCurrentContent();
+    
+    // 根据模式更新UI
+    const weekSelector = document.querySelector('.week-selector');
+    if (mode === 'chinese') {
+        // 中文模式下隐藏周次选择器，因为我们使用随机词汇
+        weekSelector.style.display = 'none';
+        currentWeekTitle.textContent = '随机词汇练习';
+        vocabulary = getRandomChineseVocabulary(10);
+    } else {
+        // 英文模式下显示周次选择器
+        weekSelector.style.display = 'block';
+        updateWeekOptions();
+        updateCurrentContent();
+    }
+    
     initGame();
 }
 
@@ -474,7 +502,13 @@ function checkGameEnd() {
 }
 
 // 绑定重置按钮
-resetButton.addEventListener('click', initGame);
+resetButton.addEventListener('click', () => {
+    // 在中文模式下重新随机选择词汇
+    if (currentMode === 'chinese') {
+        vocabulary = getRandomChineseVocabulary(10);
+    }
+    initGame();
+});
 
 // 绑定模式选择器
 modeSelect.addEventListener('change', (event) => {
@@ -494,5 +528,14 @@ window.addEventListener('resize', () => {
 });
 
 // 首次加载页面时初始化游戏
-updateWeekOptions();
+// 根据默认模式初始化
+if (currentMode === 'chinese') {
+    const weekSelector = document.querySelector('.week-selector');
+    weekSelector.style.display = 'none';
+    currentWeekTitle.textContent = '随机词汇练习';
+    vocabulary = getRandomChineseVocabulary(10);
+} else {
+    updateWeekOptions();
+    updateCurrentContent();
+}
 initGame();
