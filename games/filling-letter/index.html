@@ -11,11 +11,11 @@
   }
   html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,PingFang SC,Microsoft YaHei,Arial;}
   body{background:linear-gradient(180deg,#eef2ff, #f6f7fb);}
-  .wrap{max-width:900px;margin:24px auto;padding:16px;}
-  .game{background:var(--card);box-shadow:0 10px 30px rgba(21,24,79,.08);border-radius:16px;padding:20px;}
-  h1{margin:8px 0 12px;font-size:24px;color:var(--ink)}
+  .wrap{max-width:1440px;margin:28px auto;padding:28px;}
+  .game{background:var(--card);box-shadow:0 12px 36px rgba(21,24,79,.08);border-radius:19px;padding:24px;}
+  h1{margin:10px 0 14px;font-size:38px;color:var(--ink)}
   .controls{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-  select,button{border:1px solid #dce0f0;border-radius:10px;padding:10px 12px;background:#fff;color:var(--ink);font-size:14px;cursor:pointer}
+  select,button{border:1px solid #dce0f0;border-radius:12px;padding:14px 19px;background:#fff;color:var(--ink);font-size:19px;cursor:pointer}
   button.primary{background:var(--accent);color:#fff;border:none}
   button.good{background:var(--ok);color:#fff;border:none}
   button.bad{background:var(--bad);color:#fff;border:none}
@@ -23,13 +23,13 @@
   .status{margin-left:auto;color:var(--muted);font-size:13px}
   .card{margin:18px 0;padding:18px;border:1px dashed #e3e7ff;border-radius:12px;background:#fafbff}
   .word-display{display:flex;align-items:center;justify-content:center;gap:20px;margin:20px 0;padding:20px;background:#fff;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);border:2px solid #eef2ff}
-  .word-speak-btn{padding:10px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;cursor:pointer;font-size:14px;display:flex;align-items:center;gap:6px;transition:all 0.2s}
+  .word-speak-btn{padding:14px 24px;border:none;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer;font-size:22px;display:flex;align-items:center;gap:10px;transition:all 0.2s}
   .word-speak-btn:hover{background:#4c68d9;transform:scale(1.05)}
   .word-speak-btn:active{transform:scale(0.98)}
-  .word-translation{color:var(--muted);font-size:16px;font-weight:500;background:#f8faff;padding:8px 12px;border-radius:6px;border:1px solid #e3e7ff}
-  .mask{display:flex;gap:8px;flex-wrap:nowrap;justify-content:center;margin:12px 0;overflow-x:auto;padding:4px}
-  .slot{width:48px;height:60px;border-radius:10px;background:#fff;display:grid;place-items:center;
-        box-shadow:0 6px 14px rgba(0,0,0,.06);font-size:28px;font-weight:700;letter-spacing:1px;flex-shrink:0}
+  .word-translation{color:var(--muted);font-size:24px;font-weight:500;background:#f8faff;padding:14px 19px;border-radius:7px;border:1px solid #e3e7ff}
+  .mask{display:flex;gap:10px;flex-wrap:nowrap;justify-content:center;margin:14px 0;overflow-x:auto;padding:5px}
+  .slot{width:77px;height:96px;border-radius:14px;background:#fff;display:grid;place-items:center;
+        box-shadow:0 7px 17px rgba(0,0,0,.06);font-size:43px;font-weight:700;letter-spacing:1px;flex-shrink:0}
   .slot.hole{outline:2px dashed #c7d2fe; background:#f8faff;color:#9aa3b2}
   
   /* Mobile responsive design */
@@ -66,50 +66,52 @@
   @media (max-width: 480px) {
     .slot {
       width: calc((100vw - 80px) / 8);
-      min-width: 32px;
-      max-width: 44px;
-      height: 48px;
-      font-size: 22px;
+      min-width: 48px;
+      max-width: 67px;
+      height: 72px;
+      font-size: 34px;
     }
     
     .word-translation {
-      font-size: 14px;
-      padding: 6px 10px;
+      font-size: 22px;
+      padding: 10px 14px;
     }
     
     .word-display {
-      gap: 12px;
-      margin: 12px 0;
-      padding: 12px;
+      gap: 14px;
+      margin: 14px 0;
+      padding: 14px;
     }
     
     .word-speak-btn {
-      padding: 8px 12px;
-      font-size: 12px;
+      padding: 12px 19px;
+      font-size: 19px;
     }
   }
-  .letters{display:grid;grid-template-columns:repeat(auto-fit,minmax(44px,1fr));gap:8px;margin-top:8px}
-  .letters button{height:44px;font-weight:700}
+  .letters{display:grid;grid-template-columns:repeat(auto-fit,minmax(67px,1fr));gap:14px;margin-top:14px}
+  .letters button{height:67px;font-weight:700;font-size:29px}
+  .letters button.used{background:#e5e7eb;color:#9ca3af;cursor:not-allowed;opacity:0.6}
+  .letters button.used:hover{background:#e5e7eb;transform:none}
   
   /* Mobile optimization for letter bank */
   @media (max-width: 480px) {
     .letters {
-      grid-template-columns: repeat(auto-fit, minmax(36px, 1fr));
-      gap: 6px;
-      margin-top: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
     }
     
     .letters button {
-      height: 36px;
-      font-size: 16px;
+      height: 58px;
+      font-size: 26px;
       font-weight: 600;
     }
   }
-  .meta{display:flex;gap:10px;justify-content:center;color:#6b7280;font-size:14px}
-  .feedback{min-height:28px;text-align:center;font-size:16px;margin-top:8px}
-  .pill{display:inline-block;background:#eef2ff;color:#475569;padding:4px 10px;border-radius:999px;font-size:12px}
-  .tiny{font-size:12px;color:#94a3b8}
-  .bigword{font-size:34px;letter-spacing:3px;text-align:center}
+  .meta{display:flex;gap:14px;justify-content:center;color:#6b7280;font-size:19px}
+  .feedback{min-height:38px;text-align:center;font-size:24px;margin-top:14px}
+  .pill{display:inline-block;background:#eef2ff;color:#475569;padding:7px 17px;border-radius:999px;font-size:17px}
+  .tiny{font-size:17px;color:#94a3b8}
+  .bigword{font-size:50px;letter-spacing:5px;text-align:center}
 </style>
 </head>
 <body>
@@ -121,7 +123,7 @@
         <button id="speak" style="display:none">🔊 Play Audio</button>
         <!-- Show answer button (appears after wrong answer) -->
         <button id="showAnswer" class="hint" style="display:none">💡 Show Answer</button>
-        <div class="status" id="status">Score 0 | Streak 0</div>
+        <div class="status" id="status">Score 0 | Streak 0 | Progress: 0/0</div>
       </div>
 
       <div class="card">
@@ -156,10 +158,17 @@
 <script>
 // ---- Dolch Words Database with Chinese Translations ----
 const WORDS_WITH_TRANSLATIONS = {
-  // PRE-K
-  "a":"一个", "and":"和", "away":"离开", "big":"大的", "blue":"蓝色", "can":"能够", "come":"来", "down":"下", "find":"找到", "for":"为了", "funny":"有趣的", "go":"去", "help":"帮助", "here":"这里", "I":"我", "in":"在...里", "is":"是", "it":"它", "jump":"跳", "little":"小的", "look":"看", "make":"制作", "me":"我", "my":"我的", "not":"不", "one":"一", "play":"玩", "red":"红色", "run":"跑", "said":"说", "see":"看见", "the":"这个", "three":"三", "to":"到", "two":"二", "up":"上", "we":"我们", "where":"哪里", "yellow":"黄色", "you":"你",
-  // K
-  "all":"全部", "am":"是", "are":"是", "at":"在", "ate":"吃了", "be":"是", "black":"黑色", "brown":"棕色", "but":"但是", "came":"来了", "did":"做了", "do":"做", "eat":"吃", "four":"四", "get":"得到", "good":"好的", "have":"有", "he":"他", "into":"进入", "like":"喜欢", "must":"必须", "new":"新的", "no":"不", "now":"现在", "on":"在...上", "our":"我们的", "out":"外面", "please":"请", "pretty":"漂亮的", "ran":"跑了", "ride":"骑", "saw":"看见了", "say":"说", "she":"她", "so":"所以", "soon":"很快", "that":"那个", "there":"那里", "they":"他们", "this":"这个", "too":"也", "under":"在...下", "want":"想要", "was":"是", "well":"好", "went":"去了", "what":"什么", "white":"白色", "who":"谁", "will":"将要", "with":"和", "yes":"是的",
+  // New words from user's curriculum
+  "were":"是", "yes":"是的", "may":"可能", "or":"或者", "an":"一个", "tail":"尾巴", "paws":"爪子", "fur":"毛皮", "beak":"鸟嘴", "feathers":"羽毛",
+  "around":"周围", "animals":"动物", "eyes":"眼睛", "wish":"希望", "then":"然后", "growl":"咆哮", "prowl":"潜行", "mouth":"嘴巴", "fright":"恐惧", "scream":"尖叫",
+  "must":"必须", "much":"很多", "will":"将要", "a":"一个", "than":"比", "many":"许多", "cruel":"残忍的", "dream":"梦想", "leaf":"树叶", "breeze":"微风",
+  "gives":"给", "they":"他们", "dog":"狗", "great":"伟大的", "back":"背部", "pears":"梨", "toast":"吐司", "sweet":"甜的", "throws":"扔", "catch":"抓住",
+  "sea":"海", "head":"头", "now":"现在", "across":"穿过", "called":"被叫", "scared":"害怕的", "asleep":"睡着的", "angry":"生气的", "flew":"飞了", "world":"世界",
+  "something":"某事", "look":"看", "coming":"来", "because":"因为", "whole":"整个", "some":"一些", "love":"爱", "feel":"感觉", "show":"展示", "short":"短的",
+  "cold":"冷的", "sleeping":"睡觉", "lived":"生活", "if":"如果", "go":"去", "hear":"听", "near":"附近", "bottom":"底部", "behind":"后面", "sneak":"偷偷",
+  "other":"其他", "cannot":"不能", "never":"从不", "as":"作为", "two":"二", "together":"一起", "again":"再次", "corner":"角落", "teach":"教", "watch":"观看",
+  "going":"去", "thought":"想法", "soon":"很快", "got":"得到", "keep":"保持", "change":"改变", "space":"空间", "stars":"星星", "rocket":"火箭", "sky":"天空",
+  "Mr":"先生", "morning":"早晨", "right":"正确的", "know":"知道", "still":"仍然", "happen":"发生", "pretty":"漂亮的", "beside":"在旁边", "inside":"里面", "outside":"外面",
   // G1
   "after":"之后", "again":"再次", "an":"一个", "any":"任何", "as":"作为", "ask":"问", "by":"通过", "could":"能够", "every":"每个", "fly":"飞", "from":"从", "give":"给", "going":"去", "had":"有了", "has":"有", "her":"她的", "him":"他", "his":"他的", "how":"怎样", "just":"刚刚", "know":"知道", "let":"让", "live":"生活", "may":"可能", "of":"的", "old":"老的", "once":"一次", "open":"打开", "over":"在...上面", "put":"放", "round":"圆的", "some":"一些", "stop":"停止", "take":"拿", "thank":"谢谢", "them":"他们", "then":"然后", "think":"想", "walk":"走", "were":"是", "when":"什么时候",
   // G2
@@ -171,18 +180,21 @@ const WORDS_WITH_TRANSLATIONS = {
 };
 
 const WORDS = [
-  ...["a","and","away","big","blue","can","come","down","find","for","funny","go","help","here","I","in","is","it","jump","little","look","make","me","my","not","one","play","red","run","said","see","the","three","to","two","up","we","where","yellow","you"].map(w=>({w,g:"PRE-K",t:WORDS_WITH_TRANSLATIONS[w]})),
-  ...["all","am","are","at","ate","be","black","brown","but","came","did","do","eat","four","get","good","have","he","into","like","must","new","no","now","on","our","out","please","pretty","ran","ride","saw","say","she","so","soon","that","there","they","this","too","under","want","was","well","went","what","white","who","will","with","yes"].map(w=>({w,g:"K",t:WORDS_WITH_TRANSLATIONS[w]})),
-  ...["after","again","an","any","as","ask","by","could","every","fly","from","give","going","had","has","her","him","his","how","just","know","let","live","may","of","old","once","open","over","put","round","some","stop","take","thank","them","then","think","walk","were","when"].map(w=>({w,g:"G1",t:WORDS_WITH_TRANSLATIONS[w]})),
-  ...["always","around","because","been","before","best","both","buy","call","cold","does","don't","fast","first","five","found","gave","goes","green","its","made","many","off","or","pull","read","right","sing","sit","sleep","tell","their","these","those","upon","us","use","very","wash","which","why","wish","work","would","write","your"].map(w=>({w,g:"G2",t:WORDS_WITH_TRANSLATIONS[w]})),
-  ...["about","better","bring","carry","clean","cut","done","draw","drink","eight","fall","far","full","got","grow","hold","hot","hurt","if","keep","kind","laugh","light","long","much","myself","never","only","own","pick","seven","shall","show","six","small","start","ten","today","together","try","warm"].map(w=>({w,g:"G3",t:WORDS_WITH_TRANSLATIONS[w]})),
-  ...["apple","baby","back","ball","bear","bed","bell","bird","birthday","boat","box","boy","bread","brother","cake","car","cat","chair","chicken","children","Christmas","coat","corn","cow","day","dog","doll","door","duck","egg","eye","farm","farmer","father","feet","fire","fish","floor","flower","game","garden","girl","goodbye","grass","ground","hand","head","hill","home","horse","house","kitty","leg","letter","man","men","milk","money","morning","mother","name","nest","night","paper","party","picture","pig","rabbit","rain","ring","robin","Santa Claus","school","seed","sheep","shoe","sister","snow","song","squirrel","stick","street","sun","table","thing","time","top","toy","tree","watch","water","way","wind","window","wood"].map(w=>({w,g:"NOUNS",t:WORDS_WITH_TRANSLATIONS[w]})),
+  // New curriculum words - avoiding duplicates with existing G1-G3 and NOUNS
+  ...["were","yes","may","or","an","tail","paws","fur","beak","feathers","around","animals","eyes","wish","then","growl","prowl","mouth","fright","scream","must","much","will","a","than","many","cruel","dream","leaf","breeze","gives","they","dog","great","back","pears","toast","sweet","throws","catch","sea","head","now","across","called","scared","asleep","angry","flew","world","something","look","coming","because","whole","some","love","feel","show","short","cold","sleeping","lived","if","go","hear","near","bottom","behind","sneak","other","cannot","never","as","two","together","again","corner","teach","watch","going","thought","soon","got","keep","change","space","stars","rocket","sky","Mr","morning","right","know","still","happen","pretty","beside","inside","outside"].filter(w => WORDS_WITH_TRANSLATIONS[w]).map(w=>({w,g:"NEW",t:WORDS_WITH_TRANSLATIONS[w]})),
+  // Keep existing G1-G3 words that are not duplicated in new words
+  ...["after","any","ask","by","could","every","fly","from","give","had","has","her","him","his","how","just","let","live","of","old","once","open","over","put","round","stop","take","thank","them","think","walk","when"].map(w=>({w,g:"G1",t:WORDS_WITH_TRANSLATIONS[w]})),
+  ...["always","been","before","best","both","buy","call","does","don't","fast","first","five","found","gave","goes","green","its","made","off","pull","read","sing","sit","sleep","tell","their","these","those","upon","us","use","very","wash","which","why","work","would","write","your"].map(w=>({w,g:"G2",t:WORDS_WITH_TRANSLATIONS[w]})),
+  ...["about","better","bring","carry","clean","cut","done","draw","drink","eight","fall","far","full","grow","hold","hot","hurt","kind","laugh","light","long","myself","only","own","pick","seven","shall","six","small","start","ten","today","try","warm"].map(w=>({w,g:"G3",t:WORDS_WITH_TRANSLATIONS[w]})),
+  // Keep existing NOUNS that are not duplicated in new words 
+  ...["apple","baby","ball","bear","bed","bell","bird","birthday","boat","box","boy","bread","brother","cake","car","cat","chair","chicken","children","Christmas","coat","corn","cow","day","doll","door","duck","egg","eye","farm","farmer","father","feet","fire","fish","floor","flower","game","garden","girl","goodbye","grass","ground","hand","hill","home","horse","house","kitty","leg","letter","man","men","milk","money","mother","name","nest","night","paper","party","picture","pig","rabbit","rain","ring","robin","Santa Claus","school","seed","sheep","shoe","sister","snow","song","squirrel","stick","street","sun","table","thing","time","top","toy","tree","water","way","wind","window","wood"].map(w=>({w,g:"NOUNS",t:WORDS_WITH_TRANSLATIONS[w]})),
 ];
 
 // ---- Game State ----
 let current = null;
 let score = 0, streak = 0;
 let autoNextTimer = null; // Auto next question timer
+let usedWords = new Set(); // Track used words to avoid repetition
 
 const $ = sel => document.querySelector(sel);
 const $$ = sel => document.querySelectorAll(sel);
@@ -309,8 +321,10 @@ function showAnswer(){
     }
   });
   
-  // Clear letter bank
-  elBank.innerHTML = "";
+  // Reset all letter buttons to unused state
+  [...$$(".letters button")].forEach(btn => {
+    btn.classList.remove("used");
+  });
   
   // Show feedback
   elFeedback.innerHTML = "💡 Answer is: <span class='bigword'>"+word.toLowerCase()+"</span> (" + (current.translation || "") + ")";
@@ -331,19 +345,37 @@ function newRound(){
     const showAnswerBtn = $("#showAnswer");
     if(showAnswerBtn) showAnswerBtn.style.display = "none";
     
-    // Use all words without grade filtering
-    const pool = WORDS;
+    // Filter out used words from the pool
+    let availableWords = WORDS.filter(item => !usedWords.has(item.w));
     
-    if(!pool.length){ 
+    // If all words have been used, reset the used words set and start over
+    if(availableWords.length === 0) {
+      usedWords.clear();
+      availableWords = WORDS.slice(); // Create a copy of all words
+      console.log("All words completed! Starting new cycle.");
+      // Show feedback to user about completing all words
+      const feedback = $("#feedback");
+      if(feedback) {
+        feedback.innerHTML = "🎉 Congratulations! You've completed all " + WORDS.length + " words! Starting a new cycle...";
+        setTimeout(() => {
+          if(feedback) feedback.textContent = "";
+        }, 3000);
+      }
+    }
+    
+    if(!availableWords.length){ 
       alert("No words available"); 
       return; 
     }
     
-    const item = pool[Math.floor(Math.random()*pool.length)];
+    const item = availableWords[Math.floor(Math.random()*availableWords.length)];
     if(!item || !item.w) {
       console.error("Invalid word item:", item);
       return;
     }
+    
+    // Add the selected word to used words set
+    usedWords.add(item.w);
     
     const word = item.w.replace(/\s+/g,"");
     if(!word || word.length < 1) {
@@ -362,6 +394,11 @@ function newRound(){
     
     current = {word, missingIdxs, translation:item.t};
     setupRound(word, missingIdxs, item.t);
+    
+    // Update status with progress information
+    const totalWords = WORDS.length;
+    const completedWords = usedWords.size;
+    elStatus.textContent = `Score ${score} | Streak ${streak} | Progress: ${completedWords}/${totalWords}`;
   } catch (error) {
     console.error("Error in newRound:", error);
     const feedback = $("#feedback");
@@ -372,14 +409,14 @@ function newRound(){
 // Dynamic slot sizing for mobile devices
 function adjustSlotSizeForMobile(wordLength) {
   if (window.innerWidth <= 480) {
-    const availableWidth = window.innerWidth - 60; // Account for padding and margins (reduced from 80 to 60)
-    const gapWidth = 8 * (wordLength - 1); // 8px gap between slots
+    const availableWidth = window.innerWidth - 72; // Account for padding and margins (60 * 1.2)
+    const gapWidth = 10 * (wordLength - 1); // 10px gap between slots (8 * 1.2)
     const slotWidth = Math.floor((availableWidth - gapWidth) / wordLength);
     
-    // Ensure minimum and maximum slot sizes
-    const finalSlotWidth = Math.max(28, Math.min(44, slotWidth));
-    const fontSize = Math.max(16, Math.min(28, finalSlotWidth * 0.6));
-    const gapSize = Math.max(4, Math.min(8, finalSlotWidth * 0.15));
+    // Ensure minimum and maximum slot sizes (increased by 20%)
+    const finalSlotWidth = Math.max(34, Math.min(53, slotWidth)); // 28*1.2=34, 44*1.2=53
+    const fontSize = Math.max(19, Math.min(34, finalSlotWidth * 0.6)); // 16*1.2=19, 28*1.2=34
+    const gapSize = Math.max(5, Math.min(10, finalSlotWidth * 0.15)); // 4*1.2=5, 8*1.2=10
     
     // Calculate total word width to determine if centering is possible
     const totalWordWidth = (finalSlotWidth * wordLength) + (gapSize * (wordLength - 1));
@@ -399,13 +436,13 @@ function adjustSlotSizeForMobile(wordLength) {
       @media (max-width: 480px) {
         .slot {
           width: ${finalSlotWidth}px !important;
-          height: ${Math.max(36, finalSlotWidth * 1.2)}px !important;
+          height: ${Math.max(43, finalSlotWidth * 1.2)}px !important;
           font-size: ${fontSize}px !important;
         }
         .mask {
           gap: ${gapSize}px !important;
           justify-content: ${needsScroll ? 'flex-start' : 'center'} !important;
-          ${needsScroll ? 'padding-left: 10px !important;' : ''}
+          ${needsScroll ? 'padding-left: 12px !important;' : ''}
         }
         .puzzle-container {
           align-items: center !important;
@@ -428,6 +465,10 @@ function setupRound(word, missingIdxs, translation){
   [...$$(".slot")].forEach(slot => {
     slot.style.backgroundColor = "";
     slot.style.border = "";
+  });
+  // Clear any used button states from previous round
+  [...$$(".letters button")].forEach(btn => {
+    btn.classList.remove("used");
   });
   
   // Show game controls and translation
@@ -454,10 +495,18 @@ function setupRound(word, missingIdxs, translation){
       div.textContent = "—";
       div.addEventListener("click", ()=>{
         if(div.dataset.filled){
-          addLetterToBank(div.dataset.letter);
+          // 找到对应的按钮并重新启用
+          const buttonId = div.dataset.buttonId;
+          if(buttonId) {
+            const correspondingBtn = [...$$(".letters button")].find(btn => btn.dataset.buttonId === buttonId);
+            if(correspondingBtn) {
+              correspondingBtn.classList.remove("used"); // 移除已使用状态，重新启用
+            }
+          }
           div.textContent = "—";
           div.dataset.filled = "";
           div.dataset.letter = "";
+          div.dataset.buttonId = "";
         }
       });
       missingLetters.push(ch);
@@ -474,13 +523,17 @@ function setupRound(word, missingIdxs, translation){
   function addLetterToBank(letter){
     const btn = document.createElement("button");
     btn.textContent = letter.toLowerCase();
+    btn.dataset.letter = letter.toLowerCase();
     btn.addEventListener("click", ()=>{
+      if(btn.classList.contains("used")) return; // 已被使用的按钮不能再点击
       const hole = [...$$(".slot.hole")].find(s=>!s.dataset.filled);
       if(!hole) return;
       hole.textContent = letter.toLowerCase();
       hole.dataset.filled = "1";
       hole.dataset.letter = letter;
-      btn.remove();
+      hole.dataset.buttonId = btn.dataset.letter + "_" + Date.now(); // 添加唯一标识
+      btn.dataset.buttonId = hole.dataset.buttonId; // 按钮也保存相同标识
+      btn.classList.add("used"); // 添加已使用状态，变暗
       checkProgress();
     });
     elBank.appendChild(btn);
@@ -519,7 +572,10 @@ function setupRound(word, missingIdxs, translation){
       // Show answer button after wrong answer
       $("#showAnswer").style.display = "inline-block";
     }
-    elStatus.textContent = `Score ${score} | Streak ${streak}`;
+    // Update status with progress information
+    const totalWords = WORDS.length;
+    const completedWords = usedWords.size;
+    elStatus.textContent = `Score ${score} | Streak ${streak} | Progress: ${completedWords}/${totalWords}`;
   }
 }
 

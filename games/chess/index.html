@@ -26,7 +26,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
             padding: 30px;
-            max-width: 600px;
+            max-width: 750px;
             width: 100%;
             margin: 20px;
         }
@@ -54,8 +54,8 @@
         }
 
         .chessboard {
-            width: 480px;
-            height: 480px;
+            width: 640px;
+            height: 640px;
             margin: 0 auto;
             border: 3px solid #4a5568;
             border-radius: 8px;
@@ -66,13 +66,13 @@
         }
 
         .square {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            font-size: 32px;
+            font-size: 72px;
             font-weight: bold;
             transition: all 0.2s ease;
             position: relative;
@@ -141,16 +141,6 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
-        .move-history {
-            max-height: 200px;
-            overflow-y: auto;
-            background: #f7fafc;
-            border-radius: 10px;
-            padding: 15px;
-            margin-top: 20px;
-            font-family: 'Monaco', monospace;
-            font-size: 12px;
-        }
 
         .captured-pieces {
             display: flex;
@@ -183,14 +173,14 @@
             }
             
             .chessboard {
-                width: 320px;
-                height: 320px;
+                width: 400px;
+                height: 400px;
             }
             
             .square {
-                width: 40px;
-                height: 40px;
-                font-size: 24px;
+                width: 50px;
+                height: 50px;
+                font-size: 54px;
             }
             
             .game-title {
@@ -224,10 +214,6 @@
             <button class="btn btn-secondary" onclick="undoMove()" id="undoBtn">悔棋</button>
         </div>
 
-        <div class="move-history" id="moveHistory">
-            <strong>走棋记录：</strong><br>
-            游戏开始
-        </div>
     </div>
 
     <script>
@@ -238,6 +224,8 @@
         let gameHistory = [];
         let capturedPieces = { white: [], black: [] };
         let moveCount = 0;
+        let gameEnded = false;
+        let winner = null;
 
         // 棋子Unicode符号
         const pieces = {
@@ -300,6 +288,11 @@
 
         // 处理方格点击
         function handleSquareClick(event) {
+            // 如果游戏已结束，不允许移动
+            if (gameEnded) {
+                return;
+            }
+
             const row = parseInt(event.currentTarget.dataset.row);
             const col = parseInt(event.currentTarget.dataset.col);
 
@@ -453,6 +446,37 @@
             return true;
         }
 
+        // 检查游戏是否结束（国王被吃掉）
+        function checkGameEnd() {
+            let whiteKingExists = false;
+            let blackKingExists = false;
+
+            // 遍历棋盘查找国王
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const piece = gameBoard[row][col];
+                    if (piece === '♔') { // 白王
+                        whiteKingExists = true;
+                    } else if (piece === '♚') { // 黑王
+                        blackKingExists = true;
+                    }
+                }
+            }
+
+            // 检查是否有国王被吃掉
+            if (!whiteKingExists) {
+                gameEnded = true;
+                winner = 'black';
+                return true;
+            } else if (!blackKingExists) {
+                gameEnded = true;
+                winner = 'white';
+                return true;
+            }
+
+            return false;
+        }
+
         // 执行移动
         function makeMove(fromRow, fromCol, toRow, toCol) {
             const piece = gameBoard[fromRow][fromCol];
@@ -490,8 +514,15 @@
 
             // 更新移动记录
             moveCount++;
-            const moveNotation = `${moveCount}. ${getPieceNotation(piece)} ${getSquareNotation(fromRow, fromCol)} → ${getSquareNotation(toRow, toCol)}${capturedPiece ? ' (吃子)' : ''}`;
-            addMoveToHistory(moveNotation);
+
+            // 检查游戏是否结束
+            if (checkGameEnd()) {
+                updateGameStatus();
+                updateCapturedPieces();
+                renderBoard();
+                
+                return;
+            }
 
             // 切换玩家
             currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
@@ -520,17 +551,19 @@
             return files[col] + ranks[row];
         }
 
-        // 添加移动到历史记录
-        function addMoveToHistory(move) {
-            const historyDiv = document.getElementById('moveHistory');
-            historyDiv.innerHTML += '<br>' + move;
-            historyDiv.scrollTop = historyDiv.scrollHeight;
-        }
 
         // 更新游戏状态显示
         function updateGameStatus() {
             const statusDiv = document.getElementById('gameStatus');
-            statusDiv.textContent = currentPlayer === 'white' ? '白棋回合' : '黑棋回合';
+            
+            if (gameEnded) {
+                const winnerText = winner === 'white' ? '白棋' : '黑棋';
+                statusDiv.textContent = `🎉 游戏结束！${winnerText}获胜！`;
+                statusDiv.style.background = winner === 'white' ? 'linear-gradient(45deg, #ffd700, #ffb347)' : 'linear-gradient(45deg, #4a5568, #2d3748)';
+            } else {
+                statusDiv.textContent = currentPlayer === 'white' ? '白棋回合' : '黑棋回合';
+                statusDiv.style.background = 'linear-gradient(45deg, #667eea, #764ba2)';
+            }
         }
 
         // 更新被吃棋子显示
@@ -568,11 +601,6 @@
             renderBoard();
             clearHighlights();
 
-            // 更新移动历史
-            const historyDiv = document.getElementById('moveHistory');
-            const lines = historyDiv.innerHTML.split('<br>');
-            lines.pop();
-            historyDiv.innerHTML = lines.join('<br>');
         }
 
         // 新游戏
@@ -582,6 +610,8 @@
             gameHistory = [];
             capturedPieces = { white: [], black: [] };
             moveCount = 0;
+            gameEnded = false;
+            winner = null;
 
             initializeBoard();
             renderBoard();
@@ -589,7 +619,6 @@
             updateCapturedPieces();
             clearHighlights();
 
-            document.getElementById('moveHistory').innerHTML = '<strong>走棋记录：</strong><br>游戏开始';
         }
 
         // 初始化游戏
