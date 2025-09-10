@@ -22,6 +22,12 @@
       "title": "Ellen's Missing Letter",
       "desc": "Filling missing letter in the word",
       "thumb": "games/filling-letter/cover.png"
+    },
+    {
+      "slug": "chess",
+      "title": "Ellen's Chess",
+      "desc": "Classic chess game with beautiful interface",
+      "thumb": "games/chess/cover.png"
     }
   ]
   
