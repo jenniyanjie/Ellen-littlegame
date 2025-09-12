@@ -22,6 +22,18 @@
       "title": "Ellen's Missing Letter",
       "desc": "Filling missing letter in the word",
       "thumb": "games/filling-letter/cover.png"
+    },
+    {
+      "slug": "chess",
+      "title": "Ellen's Chess",
+      "desc": "Classic chess game with beautiful interface",
+      "thumb": "games/chess/cover.png"
+    },
+    {
+      "slug": "mahjong",
+      "title": "Ellen's Mahjong",
+      "desc": "四人麻将游戏，体验传统中国棋牌乐趣",
+      "thumb": "games/mahjong/cover.png"
     }
   ]
   

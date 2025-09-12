@@ -1,0 +1,53 @@
+<svg width="400" height="225" viewBox="0 0 400 225" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="225" fill="url(#gradient)"/>
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a4d2e"/>
+      <stop offset="100%" stop-color="#0e1116"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- 麻将桌面 -->
+  <rect x="50" y="50" width="300" height="125" fill="#2d5a3d" stroke="#1a4d2e" stroke-width="4" rx="10"/>
+  
+  <!-- 麻将牌示例 -->
+  <g>
+    <!-- 万子牌 -->
+    <rect x="80" y="70" width="24" height="32" fill="#f8f9fa" stroke="#ddd" stroke-width="1" rx="2"/>
+    <text x="92" y="90" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#d32f2f" text-anchor="middle">1万</text>
+    
+    <rect x="110" y="70" width="24" height="32" fill="#f8f9fa" stroke="#ddd" stroke-width="1" rx="2"/>
+    <text x="122" y="90" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#1976d2" text-anchor="middle">2筒</text>
+    
+    <rect x="140" y="70" width="24" height="32" fill="#f8f9fa" stroke="#ddd" stroke-width="1" rx="2"/>
+    <text x="152" y="90" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#388e3c" text-anchor="middle">3条</text>
+    
+    <!-- 风牌 -->
+    <rect x="180" y="70" width="24" height="32" fill="#f8f9fa" stroke="#ddd" stroke-width="1" rx="2"/>
+    <text x="192" y="90" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#7b1fa2" text-anchor="middle">东</text>
+    
+    <!-- 箭牌 -->
+    <rect x="210" y="70" width="24" height="32" fill="#f8f9fa" stroke="#ddd" stroke-width="1" rx="2"/>
+    <text x="222" y="90" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#f57c00" text-anchor="middle">中</text>
+    
+    <rect x="240" y="70" width="24" height="32" fill="#f8f9fa" stroke="#ddd" stroke-width="1" rx="2"/>
+    <text x="252" y="90" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#f57c00" text-anchor="middle">发</text>
+    
+    <rect x="270" y="70" width="24" height="32" fill="#f8f9fa" stroke="#ddd" stroke-width="1" rx="2"/>
+    <text x="282" y="90" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#f57c00" text-anchor="middle">白</text>
+  </g>
+  
+  <!-- 骰子 -->
+  <rect x="180" y="120" width="16" height="16" fill="white" stroke="#ddd" stroke-width="1" rx="2"/>
+  <circle cx="184" cy="124" r="1" fill="#333"/>
+  <circle cx="192" cy="132" r="1" fill="#333"/>
+  
+  <rect x="200" y="120" width="16" height="16" fill="white" stroke="#ddd" stroke-width="1" rx="2"/>
+  <circle cx="204" cy="124" r="1" fill="#333"/>
+  <circle cx="208" cy="128" r="1" fill="#333"/>
+  <circle cx="212" cy="132" r="1" fill="#333"/>
+  
+  <!-- 标题 -->
+  <text x="200" y="195" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#f8f9fa" text-anchor="middle">🀄 Ellen的四人麻将</text>
+  <text x="200" y="210" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">经典的中国传统棋牌游戏</text>
+</svg>
